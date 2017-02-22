@@ -1,0 +1,62 @@
+heat_template_version: 2014-10-16
+
+description: Template for deploying overcloud nodes.  Can be wrapped in a ResourceGroup for scaling.
+
+parameters:
+
+  overcloud_flavor:
+    type: string
+    default: overcloud
+    description: Recommended to be at least 1 vcpu, 4 GB RAM, 50 GB disk
+
+  overcloud_image:
+    type: string
+    default: empty
+    description: The base image to use for overcloud instances
+
+  key_name:
+    type: string
+    default: default
+    description: Nova keypair to inject into the undercloud and bmc
+
+  overcloud_node_count:
+    type: number
+    default: 1
+    description: Number of overcloud nodes to deploy
+
+  public_net:
+    type: string
+    description: |
+      An additional network that will be attached to the overcloud instances,
+      intended to be used for non-provisioning traffic
+    default: public
+
+  private_net:
+    type: string
+    default: private
+    description: Name of a private network which can have floating ips associated with it
+
+  overcloud_prefix:
+    type: string
+    default: overcloud
+    description: Prefix for the name of the overcloud instances
+
+  default_sg:
+    type: string
+    default: all_sg
+
+resources:
+
+  overcloud_nodes:
+    type: OS::Heat::ResourceGroup
+    properties:
+      count: {get_param: overcloud_node_count}
+      resource_def:
+        type: OS::TraaS::OvercloudNode
+        properties:
+          overcloud_flavor: {get_param: overcloud_flavor}
+          overcloud_image: {get_param: overcloud_image}
+          key_name: {get_param: key_name}
+          public_net: {get_param: public_net}
+          suffix: _%index%
+          overcloud_prefix: {get_param: overcloud_prefix}

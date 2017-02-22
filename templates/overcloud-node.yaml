@@ -1,0 +1,40 @@
+heat_template_version: 2014-10-16
+
+parameters:
+
+  overcloud_flavor:
+    type: string
+
+  overcloud_image:
+    type: string
+
+  key_name:
+    type: string
+
+  overcloud_prefix:
+    type: string
+
+  private_net:
+    type: string
+
+  suffix:
+    type: string
+
+resources:
+
+  overcloud_node:
+    type: OS::Nova::Server
+    properties:
+      flavor: {get_param: overcloud_flavor}
+      image: {get_param: overcloud_image}
+      config_drive: false
+      key_name: {get_param: key_name}
+      networks:
+        - {network: {get_param: private_net}}
+      name:
+        list_join:
+        - ''
+        - - {get_param: overcloud_prefix}
+          - {get_param: suffix}
+
+outputs:
