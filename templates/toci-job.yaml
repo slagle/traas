@@ -1,0 +1,132 @@
+heat_template_version: ocata
+
+parameters:
+
+  undercloud:
+    type: string
+    description: Undercloud server resource
+
+  undercloud_private_ip:
+    type: string
+    description: undercloud private ip address
+
+  overcloud_nodes:
+    type: json
+    description: Overcloud server resources
+
+  overcloud_private_ips:
+    type: comma_delimited_list
+    description: Overcloud node private ip addresses
+
+  toci_jobtype:
+    type: string
+    default: multinode-nonha-oooq
+    description: tripleo-ci jobtype as parsed by toci_gate_test.sh
+
+resources:
+
+  TociJobUndercloudConfig:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config: |
+        #!/bin/bash
+        set -eux
+        rm -rf /etc/profile.d/traas.sh
+        echo export PRIMARY_NODE_IP="$PRIMARY_NODE_IP" >> /etc/profile.d/traas.sh
+        echo export SUB_NODE_IPS="$SUB_NODE_IPS" >> /etc/profile.d/traas.sh
+        echo export TOCI_JOBTYPE="$TOCI_JOBTYPE" >> /etc/profile.d/traas.sh
+        mkdir -p /etc/nodepool
+        if [ ! -f /etc/nodepool/id_rsa ]; then
+          ssh-keygen -t rsa -f /etc/nodepool/id_rsa
+        fi
+        cp /etc/nodepool/id_rsa* /home/centos/.ssh
+        cat /etc/nodepool/id_rsa.pub >> /home/centos/.ssh/authorized_keys
+        chown -R centos.centos /home/centos /etc/nodepool
+        mkdir -p $heat_outputs_path
+        cp /etc/nodepool/id_rsa.pub $heat_outputs_path.public_key
+      inputs:
+        - name: PRIMARY_NODE_IP
+          type: String
+          description: IP address of primary node (Undercloud)
+        - name: SUB_NODE_IPS
+          type: String
+          description: IP addresses of sub nodes (Overcloud nodes). Space separated list.
+        - name: TOCI_JOBTYPE
+          type: String
+          description: tripleo-ci jobtype as parsed by toci_gate_test.sh
+      outputs:
+        - name: public_key
+          description: public key
+          type: String
+
+  TociJobUndercloudDeployment:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      config: {get_resource: TociJobUndercloudConfig}
+      server: {get_param: undercloud}
+      input_values:
+        PRIMARY_NODE_IP: {get_param: undercloud_private_ip}
+        SUB_NODE_IPS:
+          list_join:
+            - ' '
+            - {get_param: overcloud_private_ips}
+        TOCI_JOBTYPE: {get_param: toci_jobtype}
+
+  TociJobOvercloudConfig:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config: |
+        #!/bin/bash
+        set -eux
+        echo $public_key >> /home/centos/.ssh/authorized_keys
+      inputs:
+        - name: public_key
+          type: String
+          description: public key
+
+  TociJobOvercloudDeployment:
+    type: OS::Heat::SoftwareDeploymentGroup
+    depends_on: [TociJobUndercloudDeployment]
+    properties:
+      config: {get_resource: TociJobOvercloudConfig}
+      servers: {get_param: overcloud_nodes}
+      input_values:
+        public_key: {get_attr: [TociJobUndercloudDeployment, public_key]}
+
+  TociJobConfig:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config: |
+        #!/bin/bash
+        rpm -q git || yum -y install git
+        su -l centos -c "git clone https://github.com/slagle/traas"
+        su -l centos -c "/home/centos/traas/scripts/traas.sh"
+      inputs:
+        - name: PRIMARY_NODE_IP
+          type: String
+          description: IP address of primary node (Undercloud)
+        - name: SUB_NODE_IPS
+          type: String
+          description: IP addresses of sub nodes (Overcloud nodes). Space separated list.
+        - name: TOCI_JOBTYPE
+          type: String
+          description: tripleo-ci jobtype as parsed by toci_gate_test.sh
+
+  TociJobDeployment:
+    type: OS::Heat::SoftwareDeployment
+    depends_on: [TociJobOvercloudDeployment]
+    properties:
+      config: {get_resource: TociJobConfig}
+      server: {get_param: undercloud}
+      input_values:
+        PRIMARY_NODE_IP: {get_param: undercloud_private_ip}
+        SUB_NODE_IPS:
+          list_join:
+            - ' '
+            - {get_param: overcloud_private_ips}
+        TOCI_JOBTYPE: {get_param: toci_jobtype}
+
+outputs:

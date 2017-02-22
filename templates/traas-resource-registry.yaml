@@ -5,3 +5,4 @@ resource_registry:
   OS::TraaS::PublicNetwork: public-net-existing.yaml
   OS::TraaS::OvercloudNode: overcloud-node.yaml
   OS::TraaS::OvercloudNodes: overcloud-nodes.yaml
+  OS::TraaS:TociJob: toci-job.yaml

@@ -20,7 +20,7 @@ parameters:
 
 resources:
   undercloud_sg:
-    type: OS::TraaS::SecurityGroup
+    type: OS::Neutron::SecurityGroup
     properties:
       name: undercloud_sg
       description: Ping and SSH
@@ -47,15 +47,26 @@ resources:
     properties:
       public_net: {get_param: public_net}
       undercloud_port:
-      get_attr:
-        - undercloud_server
-        - addresses
-        - {get_param: private_net}
-        - 0
-        - port
+        get_attr:
+          - undercloud_server
+          - addresses
+          - {get_param: private_net}
+          - 0
+          - port
 
 outputs:
+  undercloud_server:
+    description: "undercloud server resource"
+    value: {get_resource: undercloud_server}
   undercloud_floating_ip:
     description: "floating ip of the undercloud instance"
     value:
       get_attr: [undercloud_floating_ip, undercloud_floating_ip]
+  undercloud_private_ip:
+    description: "private ip of the undercloud instance"
+    value:
+      get_attr:
+        - undercloud_server
+        - networks
+        - {get_param: private_net}
+        - 0

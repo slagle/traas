@@ -24,13 +24,6 @@ parameters:
     default: 1
     description: Number of overcloud nodes to deploy
 
-  public_net:
-    type: string
-    description: |
-      An additional network that will be attached to the overcloud instances,
-      intended to be used for non-provisioning traffic
-    default: public
-
   private_net:
     type: string
     default: private
@@ -57,6 +50,8 @@ resources:
           overcloud_flavor: {get_param: overcloud_flavor}
           overcloud_image: {get_param: overcloud_image}
           key_name: {get_param: key_name}
-          public_net: {get_param: public_net}
+          private_net: {get_param: private_net}
           suffix: _%index%
           overcloud_prefix: {get_param: overcloud_prefix}
+
+outputs:
