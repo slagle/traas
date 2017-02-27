@@ -101,10 +101,13 @@ resources:
       group: script
       config: |
         #!/bin/bash
+        set -eux
+        exec > >(tee -a /var/log/log)
         rpm -q git || yum -y install git
         su -l centos -c "git clone https://github.com/slagle/traas"
         su -l centos -c "/home/centos/traas/scripts/traas.sh &"
         disown
+        exit 0
       inputs:
         - name: PRIMARY_NODE_IP
           type: String
