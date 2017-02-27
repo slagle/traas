@@ -103,7 +103,8 @@ resources:
         #!/bin/bash
         rpm -q git || yum -y install git
         su -l centos -c "git clone https://github.com/slagle/traas"
-        su -l centos -c "/home/centos/traas/scripts/traas.sh"
+        su -l centos -c "/home/centos/traas/scripts/traas.sh &"
+        disown
       inputs:
         - name: PRIMARY_NODE_IP
           type: String
@@ -128,5 +129,6 @@ resources:
             - ' '
             - {get_param: overcloud_private_ips}
         TOCI_JOBTYPE: {get_param: toci_jobtype}
+      signal_transport: NO_SIGNAL
 
 outputs:
