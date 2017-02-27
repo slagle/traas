@@ -55,4 +55,6 @@ if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
     $TRIPLEO_ROOT/tripleo-ci/scripts/tripleo.sh --setup-nodepool-files
 fi
 
+hostnamectl set-hostname $(hostname)
+
 $TRIPLEO_ROOT/tripleo-ci/toci_gate_test.sh
