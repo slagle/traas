@@ -5,7 +5,8 @@ parameters:
   overcloud_flavor:
     type: string
     default: overcloud
-    description: Recommended to be at least 1 vcpu, 4 GB RAM, 50 GB disk
+    description: Nova flavor for overcloud instances. Recommended to be at least 4
+                 vcpu, 8 GB RAM, 40 GB disk
 
   overcloud_image:
     type: string
@@ -15,22 +16,22 @@ parameters:
   key_name:
     type: string
     default: default
-    description: Nova keypair to inject into the undercloud and overcloud servers
+    description: Nova keypair to inject into the undercloud and overcloud instances
 
   overcloud_node_count:
     type: number
     default: 2
-    description: Number of overcloud nodes to deploy
+    description: Number of overcloud instances to deploy
 
   private_net:
     type: string
     default: private
-    description: Name of a private network which can have floating ips associated with it
+    description: Name of a private network which will be associated with all instances
 
   public_net:
     type: string
-    description: Name of the overcloud external network
     default: public
+    description: Name of the network to use for allocating a floating ip for the undercloud instance
 
   overcloud_prefix:
     type: string
@@ -45,7 +46,8 @@ parameters:
   undercloud_flavor:
     type: string
     default: m1.large
-    description: Nova flavor to use for the undercloud instance
+    description: Nova flavor for the undercloud instance. Recommended to be at least 4
+                 vcpu, 8 GB RAM, 40 GB disk
 
   undercloud_image:
     type: string
@@ -56,11 +58,6 @@ parameters:
     type: string
     default: ""
     description: Userdata to inject into the undercloud instance
-
-  undercloud_user_data_format:
-    type: string
-    default: SOFTWARE_CONFIG
-    description: Format of undercloud userdata
 
   toci_jobtype:
     type: string
@@ -87,7 +84,6 @@ resources:
       undercloud_image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
       undercloud_name: {get_param: undercloud_name}
-      undercloud_user_data_format: {get_param: undercloud_user_data_format}
       undercloud_user_data: {get_param: undercloud_user_data}
       private_net: {get_attr: [private_network, private_net]}
       public_net: {get_attr: [public_network, public_net]}

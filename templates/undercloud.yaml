@@ -9,8 +9,6 @@ parameters:
     type: string
   undercloud_name:
     type: string
-  undercloud_user_data_format:
-    type: string
   undercloud_user_data:
     type: string
   private_net:
@@ -39,7 +37,7 @@ resources:
       networks:
       - network: {get_param: private_net}
       name: {get_param: undercloud_name}
-      user_data_format: {get_param: undercloud_user_data_format}
+      user_data_format: SOFTWARE_CONFIG
       user_data: {get_param: undercloud_user_data}
 
   undercloud_floating_ip:
