@@ -23,6 +23,13 @@ parameters:
     default: multinode-nonha-oooq
     description: tripleo-ci jobtype as parsed by toci_gate_test.sh
 
+  zuul_changes:
+    type: string
+    default: ''
+    description: A caret character separated list of the changes upon which
+                 this build is dependent upon in the form of a colon character separated
+                 list consisting of project name, target branch, and revision ref.
+
 resources:
 
   TociJobUndercloudConfig:
@@ -36,6 +43,7 @@ resources:
         echo export PRIMARY_NODE_IP="$PRIMARY_NODE_IP" >> /etc/profile.d/traas.sh
         echo export SUB_NODE_IPS="$SUB_NODE_IPS" >> /etc/profile.d/traas.sh
         echo export TOCI_JOBTYPE="$TOCI_JOBTYPE" >> /etc/profile.d/traas.sh
+        echo export ZUUL_CHANGES="$ZUUL_CHANGES" >> /etc/profile.d/traas.sh
         mkdir -p /etc/nodepool
         if [ ! -f /etc/nodepool/id_rsa ]; then
           ssh-keygen -t rsa -f /etc/nodepool/id_rsa
@@ -55,6 +63,9 @@ resources:
         - name: TOCI_JOBTYPE
           type: String
           description: tripleo-ci jobtype as parsed by toci_gate_test.sh
+        - name: ZUUL_CHANGES
+          type: String
+          description: ZUUL_CHANGES variable containing patches to be tested in toci job
       outputs:
         - name: public_key
           description: public key
@@ -118,6 +129,9 @@ resources:
         - name: TOCI_JOBTYPE
           type: String
           description: tripleo-ci jobtype as parsed by toci_gate_test.sh
+        - name: ZUUL_CHANGES
+          type: String
+          description: ZUUL_CHANGES variable containing patches to be tested in toci job
 
   TociJobDeployment:
     type: OS::Heat::SoftwareDeployment

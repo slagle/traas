@@ -64,6 +64,13 @@ parameters:
     default: multinode-nonha-oooq
     description: tripleo-ci jobtype as parsed by toci_gate_test.sh
 
+  zuul_changes:
+    type: string
+    default: ''
+    description: A caret character separated list of the changes upon which
+                 this build is dependent upon in the form of a colon character separated
+                 list consisting of project name, target branch, and revision ref.
+
 resources:
 
   public_network:
@@ -108,5 +115,6 @@ resources:
       overcloud_nodes: {get_attr: [overcloud_nodes, resource.overcloud_nodes, attributes, overcloud_node]}
       overcloud_private_ips: {get_attr: [overcloud_nodes, resource.overcloud_nodes, overcloud_private_ip]}
       toci_jobtype: {get_param: toci_jobtype}
+      zuul_changes: {get_param: zuul_changes}
 
 outputs:
