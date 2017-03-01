@@ -1,0 +1,34 @@
+heat_template_version: ocata
+
+paramters:
+
+  undercloud:
+    type: string
+
+  overcloud_nodes:
+    type: json
+
+resources:
+
+  HostnameExtraConfig:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: script
+      config: |
+        #!/bin/bash
+        set -eux
+        sed -i '/search.*/d' /etc/resolv.conf
+        echo 'supersede domain-name "";' >> /etc/dhcp/dhclient.conf
+        hostnamectl set-hostname --static $(hostname)
+
+  HostnameExtraConfigUndercloudDeployment:
+    type: OS::Heat::SoftwareDeployment
+    properties:
+      config: {get_resource: HostnameExtraConfig}
+      server: {get_parameter: undercloud}
+
+  HostnameExtraConfigOvercloudDeployment:
+    type: OS::Heat::SoftwareDeploymentGroup
+    properties:
+      config: {get_resource: HostnameExtraConfig}
+      servers: {get_parameter: overcloud_nodes}
