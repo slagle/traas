@@ -17,9 +17,6 @@ sudo mkdir -p /var/run/host-cloud
 sudo cp -r /usr/libexec/os-refresh-config /usr/libexec/host-cloud || :
 sudo cp -r /usr/libexec/os-apply-config/templates/etc/* /usr/libexec/host-cloud/os-apply-config/templates/etc/host-cloud || :
 sudo cp -r /usr/libexec/os-apply-config/templates/var/run/* /usr/libexec/host-cloud/os-apply-config/templates/var/run/host-cloud || :
-sudo rm -rf /usr/libexec/os-refresh-config/*
-sudo rm -rf /usr/libexec/os-apply-config/templates/etc/*
-sudo rm -rf /usr/libexec/os-apply-config/templates/var/run/*
 sudo cp /etc/os-collect-config.conf /etc/host-cloud/os-collect-config.conf
 
 sudo sed -i "s#command = os-refresh-config#command = /usr/local/bin/host-cloud-os-refresh-config#" /usr/libexec/host-cloud/os-apply-config/templates/etc/host-cloud/os-collect-config.conf
