@@ -106,6 +106,12 @@ resources:
       input_values:
         public_key: {get_attr: [TociJobUndercloudDeployment, public_key]}
 
+  TociJobNodeExtraConfig:
+    type: OS::Traas::ExtraConfig
+    properties:
+      undercloud: {get_param: undercloud}
+      overcloud_nodes: {get_param: overcloud_nodes}
+
   TociJobConfig:
     type: OS::Heat::SoftwareConfig
     properties:
