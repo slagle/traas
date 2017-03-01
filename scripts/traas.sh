@@ -19,6 +19,7 @@ export PRIMARY_NODE_IP=${PRIMARY_NODE_IP:-""}
 export SUB_NODE_IPS=${SUB_NODE_IPS:-""}
 export TOCI_JOBTYPE=${TOCI_JOBTYPE:-""}
 export SSH_OPTIONS=${SSH_OPTIONS:-'-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=Verbose -o PasswordAuthentication=no -o ConnectionAttempts=32 -i ~/.ssh/id_rsa'}
+export ZUUL_CHANGES=${ZUUL_CHANGES:-""}
 
 
 function check_var {
@@ -41,9 +42,29 @@ sudo yum -y update openssh
 
 rpm -q git || sudo yum -y install git
 
+ZUUL_CHANGES=${ZUUL_CHANGES//^/ }
+
 if [ ! -d tripleo-ci ]; then
     git clone -b traas https://github.com/slagle/tripleo-ci
+    pushd tripleo-ci
+
+    for PROJFULLREF in $ZUUL_CHANGES ; do
+        IFS=: change=($PROJFULLREF)
+        project=${change[0]}
+        branch=${change[1]}
+        ref=${change[2]}
+        if [ "$project" = "openstack-infra/tripleo-ci" ]; then
+            IFS=: change=($PROJFULLREF)
+            project=${change[0]}
+            branch=${change[1]}
+            ref=${change[2]}
+            git fetch https://git.openstack.org/openstack-infra/tripleo-ci $ref && git checkout FETCH_HEAD
+        fi
+    done
+
+    popd
 fi
+
 if [ ! -d tripleo-quickstart ]; then
     git clone https://git.openstack.org/openstack/tripleo-quickstart
 fi
