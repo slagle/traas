@@ -20,6 +20,8 @@ export SUB_NODE_IPS=${SUB_NODE_IPS:-""}
 export TOCI_JOBTYPE=${TOCI_JOBTYPE:-""}
 export SSH_OPTIONS=${SSH_OPTIONS:-'-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=Verbose -o PasswordAuthentication=no -o ConnectionAttempts=32 -i ~/.ssh/id_rsa'}
 export ZUUL_CHANGES=${ZUUL_CHANGES:-""}
+export TRIPLEO_CI_REMOTE=${TRIPLEO_CI_REMOTE:-https://github.com/slagle/tripleo-ci}
+export TRIPLEO_CI_BRANCH=${TRIPLEO_CI_BRANCH:-traas}
 
 
 function check_var {
@@ -45,7 +47,7 @@ rpm -q git || sudo yum -y install git
 ZUUL_CHANGES=${ZUUL_CHANGES//^/ }
 
 if [ ! -d tripleo-ci ]; then
-    git clone -b traas https://github.com/slagle/tripleo-ci
+    git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
     pushd tripleo-ci
 
     for PROJFULLREF in $ZUUL_CHANGES ; do
@@ -68,6 +70,7 @@ fi
 if [ ! -d tripleo-quickstart ]; then
     git clone https://git.openstack.org/openstack/tripleo-quickstart
 fi
+
 if [ ! -d tripleo-quickstart-extras ]; then
     git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
 fi
