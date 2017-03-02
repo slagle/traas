@@ -35,7 +35,6 @@ function check_var {
 }
 
 check_var PRIMARY_NODE_IP
-check_var SUB_NODE_IPS
 check_var TOCI_JOBTYPE
 
 # Update openssh before the test builds are installed by tripleo-ci
