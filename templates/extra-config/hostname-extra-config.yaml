@@ -1,6 +1,6 @@
 heat_template_version: ocata
 
-paramters:
+parameters:
 
   undercloud:
     type: string
@@ -25,10 +25,10 @@ resources:
     type: OS::Heat::SoftwareDeployment
     properties:
       config: {get_resource: HostnameExtraConfig}
-      server: {get_parameter: undercloud}
+      server: {get_param: undercloud}
 
   HostnameExtraConfigOvercloudDeployment:
     type: OS::Heat::SoftwareDeploymentGroup
     properties:
       config: {get_resource: HostnameExtraConfig}
-      servers: {get_parameter: overcloud_nodes}
+      servers: {get_param: overcloud_nodes}
