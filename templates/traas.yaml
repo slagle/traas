@@ -107,7 +107,7 @@ resources:
       overcloud_prefix: {get_param: overcloud_prefix}
 
   toci_job:
-    type: OS::TraaS:TociJob
+    type: OS::TraaS::TociJob
     depends_on: [undercloud, overcloud_nodes]
     properties:
       undercloud: {get_attr: [undercloud, undercloud_server]}

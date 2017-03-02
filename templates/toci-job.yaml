@@ -25,12 +25,11 @@ parameters:
 
   tripleo_ci_remote:
     type: string
-    default: https://git.openstack.org/openstack-infra/tripleo-ci
+    default: "https://git.openstack.org/openstack-infra/tripleo-ci"
     description: Git remote to use for tripleo-ci repository
 
-  tripleo_ci_branch
+  tripleo_ci_branch:
     type: string
-    default: master
     description: Git branch to use for tripleo-ci repository
 
   zuul_changes:
@@ -101,6 +100,8 @@ resources:
             - ' '
             - {get_param: overcloud_private_ips}
         TOCI_JOBTYPE: {get_param: toci_jobtype}
+        TRIPLEO_CI_REMOTE: {get_param: tripleo_ci_remote}
+        TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
 
   TociJobOvercloudConfig:
     type: OS::Heat::SoftwareConfig
@@ -125,7 +126,8 @@ resources:
         public_key: {get_attr: [TociJobUndercloudDeployment, public_key]}
 
   TociJobNodeExtraConfig:
-    type: OS::Traas::ExtraConfig
+    type: OS::TraaS::NodeExtraConfig
+    depends_on: [TociJobOvercloudDeployment]
     properties:
       undercloud: {get_param: undercloud}
       overcloud_nodes: {get_param: overcloud_nodes}
@@ -165,7 +167,7 @@ resources:
 
   TociJobDeployment:
     type: OS::Heat::SoftwareDeployment
-    depends_on: [TociJobOvercloudDeployment]
+    depends_on: [TociJobNodeExtraConfig]
     properties:
       config: {get_resource: TociJobConfig}
       server: {get_param: undercloud}
@@ -176,6 +178,8 @@ resources:
             - ' '
             - {get_param: overcloud_private_ips}
         TOCI_JOBTYPE: {get_param: toci_jobtype}
+        TRIPLEO_CI_REMOTE: {get_param: tripleo_ci_remote}
+        TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
       signal_transport: NO_SIGNAL
 
 outputs:
