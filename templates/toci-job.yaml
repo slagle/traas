@@ -25,11 +25,12 @@ parameters:
 
   tripleo_ci_remote:
     type: string
-    default: "https://git.openstack.org/openstack-infra/tripleo-ci"
+    default: "https://github.com/slagle/tripleo-ci"
     description: Git remote to use for tripleo-ci repository
 
   tripleo_ci_branch:
     type: string
+    default: traas
     description: Git branch to use for tripleo-ci repository
 
   zuul_changes:
