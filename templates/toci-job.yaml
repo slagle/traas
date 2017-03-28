@@ -50,12 +50,12 @@ resources:
         #!/bin/bash
         set -eux
         rm -rf /etc/profile.d/traas.sh
-        echo export PRIMARY_NODE_IP="$PRIMARY_NODE_IP" >> /etc/profile.d/traas.sh
-        echo export SUB_NODE_IPS="$SUB_NODE_IPS" >> /etc/profile.d/traas.sh
-        echo export TOCI_JOBTYPE="$TOCI_JOBTYPE" >> /etc/profile.d/traas.sh
-        echo export ZUUL_CHANGES="$ZUUL_CHANGES" >> /etc/profile.d/traas.sh
-        echo export TRIPLEO_CI_REMOTE="$TRIPLEO_CI_REMOTE" >> /etc/profile.d/traas.sh
-        echo export TRIPLEO_CI_BRANCH="$TRIPLEO_CI_BRANCH" >> /etc/profile.d/traas.sh
+        echo export PRIMARY_NODE_IP=\"$PRIMARY_NODE_IP\" >> /etc/profile.d/traas.sh
+        echo export SUB_NODE_IPS=\"$SUB_NODE_IPS\" >> /etc/profile.d/traas.sh
+        echo export TOCI_JOBTYPE=\"$TOCI_JOBTYPE\" >> /etc/profile.d/traas.sh
+        echo export ZUUL_CHANGES=\"$ZUUL_CHANGES\" >> /etc/profile.d/traas.sh
+        echo export TRIPLEO_CI_REMOTE=\"$TRIPLEO_CI_REMOTE\" >> /etc/profile.d/traas.sh
+        echo export TRIPLEO_CI_BRANCH=\"$TRIPLEO_CI_BRANCH\" >> /etc/profile.d/traas.sh
         mkdir -p /etc/nodepool
         if [ ! -f /etc/nodepool/id_rsa ]; then
           ssh-keygen -t rsa -f /etc/nodepool/id_rsa
