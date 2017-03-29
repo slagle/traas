@@ -78,4 +78,4 @@ if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
     $TRIPLEO_ROOT/tripleo-ci/scripts/tripleo.sh --setup-nodepool-files
 fi
 
-$TRIPLEO_ROOT/tripleo-ci/toci_gate_test-orig.sh
+$TRIPLEO_ROOT/tripleo-ci/toci_gate_test.sh
