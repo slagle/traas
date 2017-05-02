@@ -1,0 +1,10 @@
+parameters:
+  overcloud_flavor: m1.large
+  overcloud_image: CentOS-traas
+  key_name: jslagle-rdo-cloud
+  private_net: private
+  overcloud_node_count: 1
+  public_net:  38.145.32.0/22
+  undercloud_image: CentOS-traas
+  undercloud_flavor: m1.large
+  toci_jobtype: multinode-1ctlr-featureset004
