@@ -11,13 +11,10 @@ parameters:
   key_name:
     type: string
 
-  overcloud_prefix:
+  overcloud_name:
     type: string
 
   private_net:
-    type: string
-
-  suffix:
     type: string
 
 resources:
@@ -32,11 +29,7 @@ resources:
       user_data_format: SOFTWARE_CONFIG
       networks:
         - {network: {get_param: private_net}}
-      name:
-        list_join:
-        - ''
-        - - {get_param: overcloud_prefix}
-          - {get_param: suffix}
+      name: {get_param: overcloud_name}
 
 outputs:
 

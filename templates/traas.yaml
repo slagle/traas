@@ -33,15 +33,15 @@ parameters:
     default: public
     description: Name of the network to use for allocating a floating ip for the undercloud instance
 
-  overcloud_prefix:
+  overcloud_name:
     type: string
     default: overcloud
-    description: Prefix for the name of the overcloud instances
+    description: Name of the overcloud instances. The name will be prefixed with the stack name.
 
   undercloud_name:
     type: string
     default: undercloud
-    description: Name of the undercloud instance
+    description: Name of the undercloud instance. The name will be prefixed with the stack name.
 
   undercloud_flavor:
     type: string
@@ -101,7 +101,11 @@ resources:
       undercloud_flavor: {get_param: undercloud_flavor}
       undercloud_image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
-      undercloud_name: {get_param: undercloud_name}
+      undercloud_name:
+        list_join:
+          - '-'
+          - - {get_param: 'OS::stack_name'}
+            - {get_param: undercloud_name}
       undercloud_user_data: {get_param: undercloud_user_data}
       private_net: {get_attr: [private_network, private_net]}
       public_net: {get_attr: [public_network, public_net]}
@@ -115,7 +119,11 @@ resources:
       key_name: {get_param: key_name}
       overcloud_node_count: {get_param: overcloud_node_count}
       private_net: {get_attr: [private_network, private_net]}
-      overcloud_prefix: {get_param: overcloud_prefix}
+      overcloud_name:
+        list_join:
+          - '-'
+          - - {get_param: 'OS::stack_name'}
+            - {get_param: overcloud_name}
 
   toci_job:
     type: OS::TraaS::TociJob

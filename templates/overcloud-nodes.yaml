@@ -29,10 +29,10 @@ parameters:
     default: private
     description: Name of a private network which can have floating ips associated with it
 
-  overcloud_prefix:
+  overcloud_name:
     type: string
     default: overcloud
-    description: Prefix for the name of the overcloud instances
+    description: Name of the overcloud instances. The name will be prefixed with the stack name.
 
   default_sg:
     type: string
@@ -51,7 +51,11 @@ resources:
           overcloud_image: {get_param: overcloud_image}
           key_name: {get_param: key_name}
           private_net: {get_param: private_net}
-          suffix: _%index%
-          overcloud_prefix: {get_param: overcloud_prefix}
+          overcloud_name:
+            list_join:
+              - '-'
+              - {get_param: overcloud_name}
+                - -%index%
+
 
 outputs:
