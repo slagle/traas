@@ -54,8 +54,8 @@ resources:
           overcloud_name:
             list_join:
               - '-'
-              - {get_param: overcloud_name}
-                - -%index%
+              - - {get_param: overcloud_name}
+                - '%index%'
 
 
 outputs:
