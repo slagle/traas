@@ -94,6 +94,7 @@ resources:
     properties:
       config: {get_resource: TociJobUndercloudConfig}
       server: {get_param: undercloud}
+      signal_transport: HEAT_SIGNAL
       input_values:
         PRIMARY_NODE_IP: {get_param: undercloud_private_ip}
         SUB_NODE_IPS:
@@ -123,6 +124,7 @@ resources:
     properties:
       config: {get_resource: TociJobOvercloudConfig}
       servers: {get_param: overcloud_nodes}
+      signal_transport: HEAT_SIGNAL
       input_values:
         public_key: {get_attr: [TociJobUndercloudDeployment, public_key]}
 

@@ -39,6 +39,7 @@ resources:
       name: {get_param: undercloud_name}
       user_data_format: SOFTWARE_CONFIG
       user_data: {get_param: undercloud_user_data}
+      software_config_transport: POLL_SERVER_HEAT
 
   undercloud_floating_ip:
     type: OS::TraaS::UndercloudFloating

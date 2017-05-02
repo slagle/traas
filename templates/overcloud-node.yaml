@@ -30,6 +30,7 @@ resources:
       networks:
         - {network: {get_param: private_net}}
       name: {get_param: overcloud_name}
+      software_config_transport: POLL_SERVER_HEAT
 
 outputs:
 
