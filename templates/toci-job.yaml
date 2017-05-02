@@ -20,7 +20,7 @@ parameters:
 
   toci_jobtype:
     type: string
-    default: multinode-nonha-oooq
+    default: multinode-1ctlr-featureset004
     description: tripleo-ci jobtype as parsed by toci_gate_test.sh
 
   tripleo_ci_remote:
