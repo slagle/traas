@@ -1,8 +1,8 @@
-traas is a set of Heat templates and wrapper scripts arond toci_gate_test.sh
-mostly. You can think of traas as taking on the role that is done by nodepool
-and devstack-gate in CI, but using Heat instead. traas could just be used when
-you have access to an OpenStack cloud with Heat that you want to use for
-TripleO development.
+traas is a set of Heat templates and wrapper scripts arond toci_gate_test.sh.
+You can think of traas as taking on the role that is done by nodepool and
+devstack-gate in CI, but using Heat instead. traas could just be used when you
+have access to an OpenStack cloud with Heat that you want to use for TripleO
+development.
 
 The Heat templates are used to bring up a multinode environment, and then
 trigger some SoftwareDeployment resources on the undercloud node to
@@ -21,6 +21,10 @@ sample environment files that can be used to set the required parameters at::
 Once the nodes are up, the main script that is triggered is::
 
 	scripts/traas.sh
+
+The script logs to `tripleo-root/traas.log` in the home directory of the
+`centos` user. This logfile is equivalent to the upstream `console.html` output
+from a ci job.
 
 That is a simple wrapper around toci_gate_test.sh. The $TOCI_JOBTYPE variable
 (passed in via a Heat parameter) is what drives which job is executed. Since it
