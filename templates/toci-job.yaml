@@ -105,14 +105,36 @@ resources:
         TRIPLEO_CI_REMOTE: {get_param: tripleo_ci_remote}
         TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
 
+  DisconnectFromHostHeat:
+    type: OS::Heat::Value
+    properties:
+      type: string
+      value: |
+        # Disconnect this Node from the host cloud's Heat
+        systemctl stop os-collect-config
+        rm -rf /var/lib/os-collect-config/*
+        rm -rf /var/run/os-collect-config/*
+        rm -rf /var/lib/cloud/data/cfn-init-data
+        rm -f /var/lib/heat-cfntools/cfn-init-data
+        mkdir /var/lib/os-collect-config/local-data
+        echo '{ "os-collect-config": { "collectors": ["heat", "request", "local"], "command": "os-refresh-config" } }' > /var/lib/os-collect-config/local-data/00-os-collect-config
+        rm -f /etc/os-collect-config.conf
+        os-apply-config -m /var/lib/os-collect-config/local-data/00-os-collect-config
+
   TociJobOvercloudConfig:
     type: OS::Heat::SoftwareConfig
     properties:
       group: script
-      config: |
-        #!/bin/bash
-        set -eux
-        echo $public_key >> /home/centos/.ssh/authorized_keys
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -eux
+            echo $public_key >> /home/centos/.ssh/authorized_keys
+
+            $disconnect_snippet
+          params:
+            $disconnect_snippet: {get_attr: [DisconnectFromHostHeat, value]}
       inputs:
         - name: public_key
           type: String
@@ -139,14 +161,25 @@ resources:
     type: OS::Heat::SoftwareConfig
     properties:
       group: script
-      config: |
-        #!/bin/bash
-        set -eux
-        exec > >(tee -a /var/log/log)
-        rpm -q git || yum -y install git
-        su -l centos -c "git clone https://github.com/slagle/traas"
-        su -l centos -c "/home/centos/traas/scripts/traas.sh &"
-        exit 0
+      config:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -eux
+
+            $disconnect_snippet
+
+            rpm -q git || yum -y install git
+            su -l centos -c "git clone https://github.com/slagle/traas"
+            su -l centos -c /home/centos/traas/scripts/traas.sh &
+
+            # This is pretty hacky, meh.
+            rpm -q psmisc || yum -y install psmisc
+            killall -9 os-refresh-config
+            killall -9 dib-run-parts
+            exit 0
+          params:
+            $disconnect_snippet: {get_attr: [DisconnectFromHostHeat, value]}
       inputs:
         - name: PRIMARY_NODE_IP
           type: String
