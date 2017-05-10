@@ -54,11 +54,6 @@ parameters:
     default: CentOS-7-x86_64-GenericCloud-1503
     description: Image to boot as the undercloud instance
 
-  undercloud_user_data:
-    type: string
-    default: ""
-    description: Userdata to inject into the undercloud instance
-
   toci_jobtype:
     type: string
     default: multinode-nonha-oooq
@@ -94,6 +89,23 @@ resources:
     properties:
       private_net: {get_param: private_net}
 
+  user_data_script:
+    type: OS::Heat::Value
+    properties:
+      type: string
+      value: |
+        #!/bin/bash
+        rpm -q git || yum -y install git
+        git clone https://git.openstack.org/openstack-infra/tripleo-ci
+        export HOME=/root
+        tripleo-ci/scripts/tripleo.sh --repo-setup
+        yum -y install python-heat-agent*
+        rm -f /etc/yum.repos.d/delorean*
+        rm -rf tripleo-ci
+        systemctl daemon-reload
+        systemctl enable os-collect-config
+        reboot
+
   undercloud:
     depends_on: [public_network]
     type: OS::TraaS::Undercloud
@@ -106,7 +118,7 @@ resources:
           - '-'
           - - {get_param: 'OS::stack_name'}
             - {get_param: undercloud_name}
-      undercloud_user_data: {get_param: undercloud_user_data}
+      undercloud_user_data: {get_attr: [user_data_script, value]}
       private_net: {get_attr: [private_network, private_net]}
       public_net: {get_attr: [public_network, public_net]}
 
@@ -119,6 +131,7 @@ resources:
       key_name: {get_param: key_name}
       overcloud_node_count: {get_param: overcloud_node_count}
       private_net: {get_attr: [private_network, private_net]}
+      overcloud_user_data: {get_attr: [user_data_script, value]}
       overcloud_name:
         list_join:
           - '-'

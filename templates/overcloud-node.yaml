@@ -17,6 +17,9 @@ parameters:
   private_net:
     type: string
 
+  overcloud_user_data:
+    type: string
+
 resources:
   overcloud_sg:
     type: OS::Neutron::SecurityGroup
@@ -44,6 +47,7 @@ resources:
         - {get_resource: overcloud_sg}
       name: {get_param: overcloud_name}
       software_config_transport: POLL_SERVER_HEAT
+      user_data: {get_param: overcloud_user_data}
 
 outputs:
 

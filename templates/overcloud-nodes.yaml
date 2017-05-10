@@ -38,6 +38,9 @@ parameters:
     type: string
     default: all_sg
 
+  overcloud_user_data:
+    type: string
+
 resources:
 
   overcloud_nodes:
@@ -51,6 +54,7 @@ resources:
           overcloud_image: {get_param: overcloud_image}
           key_name: {get_param: key_name}
           private_net: {get_param: private_net}
+          overcloud_user_data: {get_param: overcloud_user_data}
           overcloud_name:
             list_join:
               - '-'
