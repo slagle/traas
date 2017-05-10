@@ -40,6 +40,13 @@ parameters:
 
   overcloud_user_data:
     type: string
+    default: ""
+    description: Userdata to inject into the overcloud instance
+
+  overcloud_user_data_format:
+    type: string
+    default: SOFTWARE_CONFIG
+    description: Userdata format for the overcloud instance
 
 resources:
 
@@ -55,6 +62,7 @@ resources:
           key_name: {get_param: key_name}
           private_net: {get_param: private_net}
           overcloud_user_data: {get_param: overcloud_user_data}
+          overcloud_user_data_format: {get_param: overcloud_user_data_format}
           overcloud_name:
             list_join:
               - '-'
