@@ -18,6 +18,16 @@ parameters:
     type: string
 
 resources:
+  overcloud_sg:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: overcloud_sg
+      description: Ping and SSH
+      rules:
+      - protocol: icmp
+      - protocol: tcp
+        port_range_min: 22
+        port_range_max: 22
 
   overcloud_node:
     type: OS::Nova::Server
@@ -29,6 +39,9 @@ resources:
       user_data_format: SOFTWARE_CONFIG
       networks:
         - {network: {get_param: private_net}}
+      security_groups:
+        - "default"
+        - {get_resource: overcloud_sg}
       name: {get_param: overcloud_name}
       software_config_transport: POLL_SERVER_HEAT
 

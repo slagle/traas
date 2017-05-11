@@ -36,6 +36,9 @@ resources:
       key_name: {get_param: key_name}
       networks:
       - network: {get_param: private_net}
+      security_groups:
+        - "default"
+        - {get_resource: undercloud_sg}
       name: {get_param: undercloud_name}
       user_data_format: SOFTWARE_CONFIG
       user_data: {get_param: undercloud_user_data}
