@@ -54,6 +54,11 @@ parameters:
     default: CentOS-7-x86_64-GenericCloud-1503
     description: Image to boot as the undercloud instance
 
+  undercloud_docker_registry_mirror:
+    type: string
+    default: ""
+    description: A docker registry mirror
+
   toci_jobtype:
     type: string
     default: multinode-nonha-oooq
@@ -144,6 +149,7 @@ resources:
     properties:
       undercloud: {get_attr: [undercloud, undercloud_server]}
       undercloud_private_ip: {get_attr: [undercloud, undercloud_private_ip]}
+      undercloud_docker_registry_mirror: {get_param: undercloud_docker_registry_mirror}
       overcloud_nodes: {get_attr: [overcloud_nodes, resource.overcloud_nodes, attributes, overcloud_node]}
       overcloud_private_ips: {get_attr: [overcloud_nodes, resource.overcloud_nodes, overcloud_private_ip]}
       toci_jobtype: {get_param: toci_jobtype}
