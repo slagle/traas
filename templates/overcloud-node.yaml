@@ -20,6 +20,9 @@ parameters:
   overcloud_user_data:
     type: string
 
+  overcloud_user_data_format:
+    type: string
+
 resources:
   overcloud_sg:
     type: OS::Neutron::SecurityGroup
@@ -39,7 +42,8 @@ resources:
       image: {get_param: overcloud_image}
       config_drive: false
       key_name: {get_param: key_name}
-      user_data_format: SOFTWARE_CONFIG
+      user_data: {get_param: overcloud_user_data}
+      user_data_format: {get_param: overcloud_user_data_format}
       networks:
         - {network: {get_param: private_net}}
       security_groups:
@@ -47,7 +51,6 @@ resources:
         - {get_resource: overcloud_sg}
       name: {get_param: overcloud_name}
       software_config_transport: POLL_SERVER_HEAT
-      user_data: {get_param: overcloud_user_data}
 
 outputs:
 

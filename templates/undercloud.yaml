@@ -11,6 +11,8 @@ parameters:
     type: string
   undercloud_user_data:
     type: string
+  undercloud_user_data_format:
+     type: string
   private_net:
     type: string
   public_net:
@@ -40,7 +42,7 @@ resources:
         - "default"
         - {get_resource: undercloud_sg}
       name: {get_param: undercloud_name}
-      user_data_format: SOFTWARE_CONFIG
+      user_data_format: {get_param: undercloud_user_data_format}
       user_data: {get_param: undercloud_user_data}
       software_config_transport: POLL_SERVER_HEAT
 
