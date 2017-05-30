@@ -8,3 +8,4 @@ parameters:
   undercloud_image: CentOS-7-x86_64-GenericCloud-1703
   undercloud_flavor: m1.large
   toci_jobtype: multinode-1ctlr-featureset004
+  volume_id: null

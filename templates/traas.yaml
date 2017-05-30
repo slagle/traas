@@ -54,6 +54,11 @@ parameters:
     default: CentOS-7-x86_64-GenericCloud-1503
     description: Image to boot as the undercloud instance
 
+  volume_id:
+    description: An external volume ID for docker images
+    default: null
+    type: string
+
   toci_jobtype:
     type: string
     default: multinode-nonha-oooq
@@ -95,15 +100,40 @@ resources:
       type: string
       value: |
         #!/bin/bash
+        # Ensure dev requirements for pre-provisioned nodes
+        setenforce 0
+        sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
         tripleo-ci/scripts/tripleo.sh --repo-setup
+        # a few restoration spells from tripleo-ci scripts
+        rm -rf /usr/lib/python2.7/site-packages/requests/ /usr/lib/python2.7/site-packages/urllib3
+        rpm -e --nodeps python-requests python-urllib3 || :
+        rpm -e --nodeps python2-requests python2-urllib3 || :
+        yum -y install python-requests python-urllib3
+        # configure os-collect-config to enable heat to do its things
         yum -y install python-heat-agent*
         rm -f /etc/yum.repos.d/delorean*
         rm -rf tripleo-ci
         systemctl daemon-reload
         systemctl enable os-collect-config
+        # paunch is not packaged yet
+        pip install paunch>=1.0.0
+        # Overlay2 for docker
+        cat > /etc/sysconfig/docker-storage <<-EOF_CAT
+        DOCKER_STORAGE_OPTIONS=-s overlay2
+        EOF_CAT
+        systemctl enable docker
+        # Load docker images from the mounted volume_id -> /dev/vdb
+        [ -e /dev/vdb ] || (sync; reboot)
+        systemctl start docker
+        echo "/dev/vdb /mnt/docker_images ext4 defaults 0 0" >> /etc/fstab
+        mkdir -p /mnt/docker_images
+        mount -a
+        [ -f /mnt/docker_images/tripleoupstream.tar ] && \
+        docker load -i /mnt/docker_images/tripleoupstream.tar
+        sync
         reboot
 
   undercloud:
@@ -113,6 +143,7 @@ resources:
       undercloud_flavor: {get_param: undercloud_flavor}
       undercloud_image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
+      volume_id: {get_param: volume_id}
       undercloud_name:
         list_join:
           - '-'
