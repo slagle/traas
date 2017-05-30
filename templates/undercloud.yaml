@@ -15,6 +15,8 @@ parameters:
     type: string
   public_net:
     type: string
+  volume_id:
+    type: string
 
 resources:
   undercloud_sg:
@@ -43,6 +45,12 @@ resources:
       user_data_format: SOFTWARE_CONFIG
       user_data: {get_param: undercloud_user_data}
       software_config_transport: POLL_SERVER_HEAT
+
+  persistent_volume:
+    type: OS::Cinder::VolumeAttachment
+    properties:
+      instance_uuid: {get_resource: undercloud_server}
+      volume_id: {get_param: volume_id}
 
   undercloud_floating_ip:
     type: OS::TraaS::UndercloudFloating
