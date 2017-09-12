@@ -104,6 +104,9 @@ resources:
         rm -rf tripleo-ci
         systemctl daemon-reload
         systemctl enable os-collect-config
+        # unbound is required to have local resolver
+        yum install -y unbound
+        systemctl enable unbound
         reboot
 
   undercloud:
