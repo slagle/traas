@@ -104,6 +104,7 @@ resources:
         TOCI_JOBTYPE: {get_param: toci_jobtype}
         TRIPLEO_CI_REMOTE: {get_param: tripleo_ci_remote}
         TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
+        ZUUL_CHANGES: {get_param: zuul_changes}
 
   DisconnectFromHostHeat:
     type: OS::Heat::Value
