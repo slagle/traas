@@ -2,10 +2,13 @@
 
 set -eux
 
+source ~/tripleo-root/workspace/.quickstart/bin/activate
+
 TAGS=${TAGS:-"overcloud-scripts,overcloud-deploy"}
 CONFIG=${CONFIG:-"tripleo-root/tripleo-quickstart/config/general_config/featureset004.yml"}
 NODES=${NODES:-"tripleo-root/tripleo-quickstart/config/nodes/1ctlr.yml"}
 
+set +e
 ~/tripleo-root/tripleo-quickstart/quickstart.sh \
     --tags $TAGS \
     --no-clone \
@@ -23,3 +26,8 @@ NODES=${NODES:-"tripleo-root/tripleo-quickstart/config/nodes/1ctlr.yml"}
     --extra-vars deploy_timeout=80 \
     --playbook multinode.yml \
     127.0.0.2
+
+rc=$?
+set -e
+deactivate
+exit $rc
