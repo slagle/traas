@@ -2,7 +2,9 @@
 
 set -eux
 
+set +u
 source ~/tripleo-root/workspace/.quickstart/bin/activate
+set -u
 
 TAGS=${TAGS:-"overcloud-scripts,overcloud-deploy"}
 CONFIG=${CONFIG:-"tripleo-root/tripleo-quickstart/config/general_config/featureset004.yml"}
