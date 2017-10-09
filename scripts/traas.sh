@@ -48,7 +48,9 @@ rpm -q git || sudo yum -y install git
 ZUUL_REFS=${ZUUL_CHANGES//^/ }
 
 for PROJFULLREF in $ZUUL_REFS ; do
+	OLDIFS=$IFS
 	IFS=: change=($PROJFULLREF)
+    IFS=$OLDIFS
 	echo ${change[*]}
 	project=${change[0]}
 	branch=${change[1]}
