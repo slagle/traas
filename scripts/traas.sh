@@ -47,67 +47,42 @@ rpm -q git || sudo yum -y install git
 
 ZUUL_REFS=${ZUUL_CHANGES//^/ }
 
+for PROJFULLREF in $ZUUL_REFS ; do
+	IFS=: change=($PROJFULLREF)
+	echo ${change[*]}
+	project=${change[0]}
+	branch=${change[1]}
+	ref=${change[2]}
+	if [ "$project" = "openstack-infra/tripleo-ci" ]; then
+		git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
+		pushd tripleo-ci
+			git fetch https://git.openstack.org/openstack-infra/tripleo-ci $ref && git checkout FETCH_HEAD
+		popd
+	fi
+	if [ "$project" = "openstack/tripleo-quickstart" ]; then
+		git clone https://git.openstack.org/openstack/tripleo-quickstart
+		pushd tripleo-quickstart
+			git fetch https://git.openstack.org/openstack/tripleo-quickstart $ref && git checkout FETCH_HEAD
+		popd
+	fi
+	if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
+		git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
+		pushd tripleo-quickstart-extras
+			git fetch https://git.openstack.org/openstack/tripleo-quickstart-extras $ref && git checkout FETCH_HEAD
+		popd
+	fi
+done
+
 if [ ! -d tripleo-ci ]; then
     git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
-    pushd tripleo-ci
-
-    for PROJFULLREF in $ZUUL_REFS ; do
-        IFS=: change=($PROJFULLREF)
-        project=${change[0]}
-        branch=${change[1]}
-        ref=${change[2]}
-        if [ "$project" = "openstack-infra/tripleo-ci" ]; then
-            IFS=: change=($PROJFULLREF)
-            project=${change[0]}
-            branch=${change[1]}
-            ref=${change[2]}
-            git fetch https://git.openstack.org/openstack-infra/tripleo-ci $ref && git checkout FETCH_HEAD
-        fi
-    done
-
-    popd
 fi
 
 if [ ! -d tripleo-quickstart ]; then
     git clone https://git.openstack.org/openstack/tripleo-quickstart
-    pushd tripleo-quickstart
-
-    for PROJFULLREF in $ZUUL_REFS ; do
-        IFS=: change=($PROJFULLREF)
-        project=${change[0]}
-        branch=${change[1]}
-        ref=${change[2]}
-        if [ "$project" = "openstack/tripleo-quickstart" ]; then
-            IFS=: change=($PROJFULLREF)
-            project=${change[0]}
-            branch=${change[1]}
-            ref=${change[2]}
-            git fetch https://git.openstack.org/openstack/tripleo-quickstart $ref && git checkout FETCH_HEAD
-        fi
-    done
-
-    popd
 fi
 
 if [ ! -d tripleo-quickstart-extras ]; then
     git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
-    pushd tripleo-quickstart-extras
-
-    for PROJFULLREF in $ZUUL_REFS ; do
-        IFS=: change=($PROJFULLREF)
-        project=${change[0]}
-        branch=${change[1]}
-        ref=${change[2]}
-        if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
-            IFS=: change=($PROJFULLREF)
-            project=${change[0]}
-            branch=${change[1]}
-            ref=${change[2]}
-            git fetch https://git.openstack.org/openstack/tripleo-quickstart-extras $ref && git checkout FETCH_HEAD
-        fi
-    done
-
-    popd
 fi
 
 if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
