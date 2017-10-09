@@ -31,5 +31,7 @@ set +e
 
 rc=$?
 set -e
+set +u
 deactivate
+set -u
 exit $rc
