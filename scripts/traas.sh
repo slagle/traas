@@ -44,6 +44,14 @@ check_var TOCI_JOBTYPE
 sudo yum -y update openssh
 
 rpm -q git || sudo yum -y install git
+rpm -q python-virtualenv || sudo yum -y install python-virtualenv
+
+mkdir workspace
+virtualenv workspace/.quickstart
+set +u
+source workspace/.quickstart/bin/activate
+set -u
+pip install pip --upgrade
 
 ZUUL_REFS=${ZUUL_CHANGES//^/ }
 
@@ -65,12 +73,14 @@ for PROJFULLREF in $ZUUL_REFS ; do
 		git clone https://git.openstack.org/openstack/tripleo-quickstart
 		pushd tripleo-quickstart
 			git fetch https://git.openstack.org/openstack/tripleo-quickstart $ref && git checkout FETCH_HEAD
+            pip install .
 		popd
 	fi
 	if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
 		git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
 		pushd tripleo-quickstart-extras
 			git fetch https://git.openstack.org/openstack/tripleo-quickstart-extras $ref && git checkout FETCH_HEAD
+            pip install .
 		popd
 	fi
 done
@@ -90,5 +100,9 @@ fi
 if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
     $TRIPLEO_ROOT/tripleo-ci/scripts/tripleo.sh --setup-nodepool-files
 fi
+
+set +u
+deactivate
+set -u
 
 $TRIPLEO_ROOT/tripleo-ci/toci_gate_test.sh
