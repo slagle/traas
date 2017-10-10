@@ -70,13 +70,16 @@ for PROJFULLREF in $ZUUL_REFS ; do
 		popd
 	fi
 	if [ "$project" = "openstack/tripleo-quickstart" ]; then
+        rm -rf tripleo-quickstart
 		git clone https://git.openstack.org/openstack/tripleo-quickstart
 		pushd tripleo-quickstart
 			git fetch https://git.openstack.org/openstack/tripleo-quickstart $ref && git checkout FETCH_HEAD
+            sudo ./quickstart.sh --install-deps
             pip install .
 		popd
 	fi
 	if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
+        rm -rf tripleo-quickstart-extras
 		git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
 		pushd tripleo-quickstart-extras
 			git fetch https://git.openstack.org/openstack/tripleo-quickstart-extras $ref && git checkout FETCH_HEAD
