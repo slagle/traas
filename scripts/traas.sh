@@ -56,36 +56,36 @@ pip install pip --upgrade
 ZUUL_REFS=${ZUUL_CHANGES//^/ }
 
 for PROJFULLREF in $ZUUL_REFS ; do
-	OLDIFS=$IFS
-	IFS=: change=($PROJFULLREF)
+    OLDIFS=$IFS
+    IFS=: change=($PROJFULLREF)
     IFS=$OLDIFS
-	echo ${change[*]}
-	project=${change[0]}
-	branch=${change[1]}
-	ref=${change[2]}
-	if [ "$project" = "openstack-infra/tripleo-ci" ]; then
-		git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
-		pushd tripleo-ci
-			git fetch https://git.openstack.org/openstack-infra/tripleo-ci $ref && git checkout FETCH_HEAD
-		popd
-	fi
-	if [ "$project" = "openstack/tripleo-quickstart" ]; then
+    echo ${change[*]}
+    project=${change[0]}
+    branch=${change[1]}
+    ref=${change[2]}
+    if [ "$project" = "openstack-infra/tripleo-ci" ]; then
+        git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
+        pushd tripleo-ci
+        git fetch https://git.openstack.org/openstack-infra/tripleo-ci $ref && git checkout FETCH_HEAD
+        popd
+    fi
+    if [ "$project" = "openstack/tripleo-quickstart" ]; then
         rm -rf tripleo-quickstart
-		git clone https://git.openstack.org/openstack/tripleo-quickstart
-		pushd tripleo-quickstart
-			git fetch https://git.openstack.org/openstack/tripleo-quickstart $ref && git checkout FETCH_HEAD
-            sudo ./quickstart.sh --install-deps
-            pip install .
-		popd
-	fi
-	if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
+        git clone https://git.openstack.org/openstack/tripleo-quickstart
+        pushd tripleo-quickstart
+        git fetch https://git.openstack.org/openstack/tripleo-quickstart $ref && git checkout FETCH_HEAD
+        sudo ./quickstart.sh --install-deps
+        pip install .
+        popd
+    fi
+    if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
         rm -rf tripleo-quickstart-extras
-		git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
-		pushd tripleo-quickstart-extras
-			git fetch https://git.openstack.org/openstack/tripleo-quickstart-extras $ref && git checkout FETCH_HEAD
-            pip install .
-		popd
-	fi
+        git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
+        pushd tripleo-quickstart-extras
+        git fetch https://git.openstack.org/openstack/tripleo-quickstart-extras $ref && git checkout FETCH_HEAD
+        pip install .
+        popd
+    fi
 done
 
 if [ ! -d tripleo-ci ]; then
