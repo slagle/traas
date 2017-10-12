@@ -8,5 +8,4 @@ parameters:
   undercloud_image: CentOS-7-x86_64-GenericCloud-1708
   undercloud_flavor: m1.large
   toci_jobtype: multinode-1ctlr-featureset010
-  zuul_changes: |
-    openstack/tripleo-quickstart-extras:master:refs/changes/06/508306/21^openstack/tripleo-heat-templates:master:refs/changes/27/505827/14^openstack/tripleo-common:master:refs/changes/89/508189/11^openstack/tripleo-quickstart:master:refs/changes/07/508307/15
+  zuul_changes: openstack/tripleo-quickstart-extras:master:refs/changes/06/508306/21^openstack/tripleo-heat-templates:master:refs/changes/27/505827/14^openstack/tripleo-common:master:refs/changes/89/508189/12^openstack/tripleo-quickstart:master:refs/changes/07/508307/19
