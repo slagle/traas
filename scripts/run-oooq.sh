@@ -6,7 +6,7 @@ set +u
 source ~/tripleo-root/workspace/.quickstart/bin/activate
 set -u
 
-TAGS=${TAGS:-"overcloud-scripts,overcloud-deploy"}
+TAGS=${TAGS:-"build,undercloud-setup,undercloud-scripts,undercloud-install,undercloud-post-install,tripleo-validations,overcloud-scripts,overcloud-prep-config,overcloud-prep-containers,overcloud-deploy,overcloud-upgrade,overcloud-validate"}
 CONFIG=${CONFIG:-"tripleo-root/tripleo-quickstart/config/general_config/featureset004.yml"}
 NODES=${NODES:-"tripleo-root/tripleo-quickstart/config/nodes/1ctlr.yml"}
 
