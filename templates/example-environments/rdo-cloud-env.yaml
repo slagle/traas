@@ -1,10 +1,10 @@
 parameters:
   overcloud_flavor: m1.large
-  overcloud_image: CentOS-7-x86_64-GenericCloud-1703
+  overcloud_image: CentOS-7-x86_64-GenericCloud-1708
   key_name: jslagle-rdo-cloud
   private_net: private
   overcloud_node_count: 1
   public_net:  38.145.32.0/22
-  undercloud_image: CentOS-7-x86_64-GenericCloud-1703
+  undercloud_image: CentOS-7-x86_64-GenericCloud-1708
   undercloud_flavor: m1.large
   toci_jobtype: multinode-1ctlr-featureset004
