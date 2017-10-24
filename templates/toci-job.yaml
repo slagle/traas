@@ -39,6 +39,15 @@ parameters:
     description: A caret character separated list of the changes upon which
                  this build is dependent upon in the form of a colon character separated
                  list consisting of project name, target branch, and revision ref.
+  traas_repository:
+    type: string
+    default: 'https://github.com/slagle/traas'
+    description: Traas git repository
+
+  stable_release:
+    type: string
+    default: 'master'
+    description: Release to be used by quickstart --release option
 
 resources:
 
@@ -56,6 +65,7 @@ resources:
         echo export ZUUL_CHANGES=\"$ZUUL_CHANGES\" >> /etc/profile.d/traas.sh
         echo export TRIPLEO_CI_REMOTE=\"$TRIPLEO_CI_REMOTE\" >> /etc/profile.d/traas.sh
         echo export TRIPLEO_CI_BRANCH=\"$TRIPLEO_CI_BRANCH\" >> /etc/profile.d/traas.sh
+        echo export STABLE_RELEASE=\"$STABLE_RELEASE\" >> /etc/profile.d/traas.sh
         mkdir -p /etc/nodepool
         if [ ! -f /etc/nodepool/id_rsa ]; then
           ssh-keygen -t rsa -f /etc/nodepool/id_rsa
@@ -84,6 +94,10 @@ resources:
         - name: TRIPLEO_CI_BRANCH
           type: String
           description: Git branch to use for tripleo-ci repository
+        - name: STABLE_RELEASE
+          type: String
+          description: Release to be used by quickstart --release option
+
       outputs:
         - name: public_key
           description: public key
@@ -105,6 +119,7 @@ resources:
         TRIPLEO_CI_REMOTE: {get_param: tripleo_ci_remote}
         TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
         ZUUL_CHANGES: {get_param: zuul_changes}
+        STABLE_RELEASE: {get_param: stable_release}
 
   DisconnectFromHostHeat:
     type: OS::Heat::Value
@@ -171,7 +186,7 @@ resources:
             $disconnect_snippet
 
             rpm -q git || yum -y install git
-            su -l centos -c "git clone https://github.com/slagle/traas"
+            su -l centos -c "git clone $traas_repository"
             su -l centos -c /home/centos/traas/scripts/traas.sh &
 
             # This is pretty hacky, meh.
@@ -181,6 +196,7 @@ resources:
             exit 0
           params:
             $disconnect_snippet: {get_attr: [DisconnectFromHostHeat, value]}
+            $traas_repository: {get_param: traas_repository}
       inputs:
         - name: PRIMARY_NODE_IP
           type: String
@@ -200,6 +216,9 @@ resources:
         - name: TRIPLEO_CI_BRANCH
           type: String
           description: Git branch to use for tripleo-ci repository
+        - name: STABLE_RELEASE
+          type: String
+          description: Branch to be used by quickstart --release option
 
   TociJobDeployment:
     type: OS::Heat::SoftwareDeployment
@@ -216,6 +235,7 @@ resources:
         TOCI_JOBTYPE: {get_param: toci_jobtype}
         TRIPLEO_CI_REMOTE: {get_param: tripleo_ci_remote}
         TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
+        STABLE_RELEASE: {get_param: stable_release}
       signal_transport: NO_SIGNAL
 
 outputs:
