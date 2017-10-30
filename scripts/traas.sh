@@ -46,6 +46,10 @@ sudo yum -y update openssh
 rpm -q git || sudo yum -y install git
 rpm -q python-virtualenv || sudo yum -y install python-virtualenv
 
+if [ -d workspace]; then
+    rm -rf workspace
+fi
+
 mkdir workspace
 virtualenv workspace/.quickstart
 set +u
@@ -63,13 +67,13 @@ for PROJFULLREF in $ZUUL_REFS ; do
     project=${change[0]}
     branch=${change[1]}
     ref=${change[2]}
-    if [ "$project" = "openstack-infra/tripleo-ci" ]; then
+    if [ "$project" = "openstack-infra/tripleo-ci" -a ! -d tripleo-ci ]; then
         git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
         pushd tripleo-ci
         git fetch https://git.openstack.org/openstack-infra/tripleo-ci $ref && git checkout FETCH_HEAD
         popd
     fi
-    if [ "$project" = "openstack/tripleo-quickstart" ]; then
+    if [ "$project" = "openstack/tripleo-quickstart" -a ! -d tripleo-quickstart ]; then
         rm -rf tripleo-quickstart
         git clone https://git.openstack.org/openstack/tripleo-quickstart
         pushd tripleo-quickstart
@@ -78,7 +82,7 @@ for PROJFULLREF in $ZUUL_REFS ; do
         pip install .
         popd
     fi
-    if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
+    if [ "$project" = "openstack/tripleo-quickstart-extras" -a ! -d tripleo-quickstart-extras ]; then
         rm -rf tripleo-quickstart-extras
         git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
         pushd tripleo-quickstart-extras
