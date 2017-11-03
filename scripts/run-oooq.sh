@@ -2,16 +2,15 @@
 
 set -eux
 
-set +u
-source ~/tripleo-root/workspace/.quickstart/bin/activate
-set -u
-
 TAGS=${TAGS:-"build,undercloud-setup,undercloud-scripts,undercloud-install,undercloud-post-install,tripleo-validations,overcloud-scripts,overcloud-prep-config,overcloud-prep-containers,overcloud-deploy,overcloud-upgrade,overcloud-validate"}
 CONFIG=${CONFIG:-"tripleo-root/tripleo-quickstart/config/general_config/featureset004.yml"}
 NODES=${NODES:-"tripleo-root/tripleo-quickstart/config/nodes/1ctlr.yml"}
 
+cp $TRIPLEO_ROOT/tripleo-ci/toci-quickstart/config/testenv/osinfra_hosts ~/tripleo-root/workspace/.quickstart/hosts
+
 set +e
 ~/tripleo-root/tripleo-quickstart/quickstart.sh \
+    --bootstrap \
     --tags $TAGS \
     --no-clone \
     --working-dir ~/tripleo-root/workspace/.quickstart/ \
@@ -27,11 +26,8 @@ set +e
     --config $CONFIG \
     --extra-vars deploy_timeout=80 \
     --playbook multinode.yml \
+    $@ \
     127.0.0.2
 
 rc=$?
-set -e
-set +u
-deactivate
-set -u
 exit $rc
