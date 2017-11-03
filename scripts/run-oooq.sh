@@ -6,7 +6,7 @@ TAGS=${TAGS:-"build,undercloud-setup,undercloud-scripts,undercloud-install,under
 CONFIG=${CONFIG:-"tripleo-root/tripleo-quickstart/config/general_config/featureset004.yml"}
 NODES=${NODES:-"tripleo-root/tripleo-quickstart/config/nodes/1ctlr.yml"}
 
-cp $TRIPLEO_ROOT/tripleo-ci/toci-quickstart/config/testenv/osinfra_hosts ~/tripleo-root/workspace/.quickstart/hosts
+cp ~/tripleo-root/tripleo-ci/toci-quickstart/config/testenv/osinfra_hosts ~/tripleo-root/workspace/.quickstart/hosts
 
 set +e
 ~/tripleo-root/tripleo-quickstart/quickstart.sh \
