@@ -24,7 +24,7 @@ export TRIPLEO_CI_REMOTE=${TRIPLEO_CI_REMOTE:-https://github.com/slagle/tripleo-
 export TRIPLEO_CI_BRANCH=${TRIPLEO_CI_BRANCH:-traas}
 export EXTRA_VARS=${EXTRA_VARS:-""}
 EXTRA_VARS="$EXTRA_VARS --extra-vars vxlan_mtu=1400"
-
+export NODEPOOL_PROVIDER=${NODEPOOL_PROVIDER:-""}
 
 function check_var {
     local var_name=$1
