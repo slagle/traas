@@ -171,7 +171,10 @@ resources:
             $disconnect_snippet
 
             rpm -q git || yum -y install git
-            su -l centos -c "git clone https://github.com/slagle/traas"
+            su -l centos -c "git clone https://github.com/jfrancoa/traas"
+            sudo yum install -y centos-release-openstack-pike
+            sudo yum install -y python-os-testr
+            sudo yum autoremove -y centos-release-openstack-pike
             su -l centos -c /home/centos/traas/scripts/traas.sh &
 
             # This is pretty hacky, meh.
