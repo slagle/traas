@@ -109,9 +109,6 @@ if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
 fi
 
 sudo mkdir -p /etc/ci
-sudo touch /etc/ci/mirror_info.sh
-echo "NODEPOOL_REGION=${NODEPOOL_REGION}" | sudo tee -a /etc/ci/mirror_info.sh
-echo "NODEPOOL_CLOUD=${NODEPOOL_CLOUD}" | sudo tee -a /etc/ci/mirror_info.sh
 
 set +u
 deactivate
