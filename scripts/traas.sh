@@ -45,6 +45,8 @@ check_var TOCI_JOBTYPE
 # See https://review.openstack.org/#/c/437683/
 sudo yum -y update openssh
 sudo yum -y install patch wget
+# TODO: try to overcome a problem with openvswitch during ovs_vxlan_bridge
+sudo yum -y openvswitch
 rpm -q git || sudo yum -y install git
 rpm -q python-virtualenv || sudo yum -y install python-virtualenv
 
