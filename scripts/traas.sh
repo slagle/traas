@@ -107,9 +107,10 @@ if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
     $TRIPLEO_ROOT/tripleo-ci/scripts/tripleo.sh --setup-nodepool-files
 fi
 
-mkdir -p /etc/ci
-echo "NODEPOOL_REGION=${NODEPOOL_REGION}" >> /etc/ci/mirror_info.sh
-echo "NODEPOOL_CLOUD=${NODEPOOL_CLOUD}" >> /etc/ci/mirror_info.sh
+sudo mkdir -p /etc/ci
+sudo touch /etc/ci/mirror_info.sh
+echo "NODEPOOL_REGION=${NODEPOOL_REGION}" | sudo tee -a /etc/ci/mirror_info.sh
+echo "NODEPOOL_CLOUD=${NODEPOOL_CLOUD}" | sudo tee -a /etc/ci/mirror_info.sh
 
 set +u
 deactivate
