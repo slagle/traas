@@ -46,7 +46,7 @@ check_var TOCI_JOBTYPE
 # Update openssh before the test builds are installed by tripleo-ci
 # See https://review.openstack.org/#/c/437683/
 sudo yum -y update openssh
-sudo yum -y install patch
+sudo yum -y install patch wget
 rpm -q git || sudo yum -y install git
 rpm -q python-virtualenv || sudo yum -y install python-virtualenv
 
