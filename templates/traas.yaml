@@ -76,6 +76,10 @@ parameters:
     default: traas
     description: Git branch to use for tripleo-ci repository
 
+  trass_repo:
+    type: string
+    default: "https://github.com/slagle/trass"
+    description: Git remote to use for trass repository
 
 resources:
 
@@ -153,5 +157,6 @@ resources:
       zuul_changes: {get_param: zuul_changes}
       tripleo_ci_remote: {get_param: tripleo_ci_remote}
       tripleo_ci_branch: {get_param: tripleo_ci_branch}
+      trass_repo: {get_param: trass_repo}
 
 outputs:

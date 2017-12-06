@@ -33,6 +33,11 @@ parameters:
     default: traas
     description: Git branch to use for tripleo-ci repository
 
+  trass_repo:
+    type: string
+    default: "https://github.com/slagle/trass"
+    description: Git remote to use for trass repository
+
   zuul_changes:
     type: string
     default: ''
@@ -171,7 +176,7 @@ resources:
             $disconnect_snippet
 
             rpm -q git || yum -y install git
-            su -l centos -c "git clone https://github.com/slagle/traas"
+            su -l centos -c "git clone $trass_repo"
             su -l centos -c /home/centos/traas/scripts/traas.sh &
 
             # This is pretty hacky, meh.
@@ -181,6 +186,7 @@ resources:
             exit 0
           params:
             $disconnect_snippet: {get_attr: [DisconnectFromHostHeat, value]}
+            $trass_repo: {get_param: trass_repo}
       inputs:
         - name: PRIMARY_NODE_IP
           type: String
