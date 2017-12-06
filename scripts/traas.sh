@@ -55,6 +55,7 @@ source workspace/.quickstart/bin/activate
 set -u
 pip install pip --upgrade
 
+CI_REFS=${CI_CHANGES//^/ }
 ZUUL_REFS=${ZUUL_CHANGES//^/ }
 
 
@@ -70,7 +71,7 @@ if [ ! -d tripleo-quickstart-extras ]; then
     git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
 fi
 
-for PROJFULLREF in $ZUUL_REFS ; do
+for PROJFULLREF in $CI_REFS ; do
     OLDIFS=$IFS
     IFS=: change=($PROJFULLREF)
     IFS=$OLDIFS

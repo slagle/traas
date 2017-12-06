@@ -8,7 +8,7 @@ parameters:
   undercloud_image: CentOS-7-x86_64-GenericCloud-1708
   undercloud_flavor: m1.large
   toci_jobtype: multinode-1ctlr-featureset036
-  zuul_changes: openstack/tripleo-quickstart-extras:525680^openstack/tripleo-quickstart:525686^openstack/tripleo-quickstart:519195^openstack-infra/tripleo-ci:526000
+  ci_changes: openstack/tripleo-quickstart-extras:525680^openstack/tripleo-quickstart:525686^openstack/tripleo-quickstart:519195^openstack-infra/tripleo-ci:526000
   tripleo_ci_remote: https://git.openstack.org/openstack-infra/tripleo-ci
   tripleo_ci_branch: master
   trass_repo: https://github.com/sathlan/traas
