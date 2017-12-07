@@ -55,6 +55,11 @@ parameters:
     default: 'master'
     description: Release to be used by quickstart --release option
 
+  zuul_branch:
+    type: string
+    default: 'master'
+    description: Which branch are we starting from.
+
 resources:
 
   TociJobUndercloudConfig:
@@ -73,6 +78,7 @@ resources:
         echo export TRIPLEO_CI_REMOTE=\"$TRIPLEO_CI_REMOTE\" >> /etc/profile.d/traas.sh
         echo export TRIPLEO_CI_BRANCH=\"$TRIPLEO_CI_BRANCH\" >> /etc/profile.d/traas.sh
         echo export STABLE_RELEASE=\"$STABLE_RELEASE\" >> /etc/profile.d/traas.sh
+        echo export ZUUL_BRANCH=\"$ZUUL_BRANCH\" >> /etc/profile.d/traas.sh
         mkdir -p /etc/nodepool
         if [ ! -f /etc/nodepool/id_rsa ]; then
           ssh-keygen -t rsa -f /etc/nodepool/id_rsa
@@ -95,6 +101,9 @@ resources:
         - name: ZUUL_CHANGES
           type: String
           description: ZUUL_CHANGES variable containing patches to be tested in toci job
+        - name: ZUUL_BRANCH
+          type: String
+          description: ZUUL_BRANCH which branch we want to start from
         - name: CI_CHANGES
           type: String
           description: CI_CHANGES variable containing patches for boostraping oooq
@@ -130,6 +139,7 @@ resources:
         TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
         ZUUL_CHANGES: {get_param: zuul_changes}
         STABLE_RELEASE: {get_param: stable_release}
+        ZUUL_BRANCH: {get_param: zuul_branch}
         CI_CHANGES: {get_param: ci_changes}
 
   DisconnectFromHostHeat:

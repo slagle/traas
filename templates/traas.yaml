@@ -66,6 +66,11 @@ parameters:
                  this build is dependent upon in the form of a colon character separated
                  list consisting of project name, target branch, and revision ref.
 
+  zuul_branch:
+    type: string
+    default: 'master'
+    description: Which branch are we starting from.
+
   ci_changes:
     type: string
     default: ''
@@ -167,6 +172,7 @@ resources:
       overcloud_private_ips: {get_attr: [overcloud_nodes, resource.overcloud_nodes, overcloud_private_ip]}
       toci_jobtype: {get_param: toci_jobtype}
       zuul_changes: {get_param: zuul_changes}
+      zuul_branch: {get_param: zuul_branch}
       ci_changes: {get_param: ci_changes}
       tripleo_ci_remote: {get_param: tripleo_ci_remote}
       tripleo_ci_branch: {get_param: tripleo_ci_branch}
