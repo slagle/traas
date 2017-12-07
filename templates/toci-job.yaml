@@ -90,6 +90,9 @@ resources:
         - name: ZUUL_CHANGES
           type: String
           description: ZUUL_CHANGES variable containing patches to be tested in toci job
+        - name: CI_CHANGES
+          type: String
+          description: CI_CHANGES variable containing patches for boostraping oooq
         - name: TRIPLEO_CI_REMOTE
           type: String
           description: Git remote to use for tripleo-ci repository
