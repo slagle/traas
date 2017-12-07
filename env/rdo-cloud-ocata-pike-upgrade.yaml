@@ -1,0 +1,14 @@
+parameters:
+  overcloud_flavor: m1.large
+  overcloud_image: CentOS-7-x86_64-GenericCloud-1708
+  key_name: xpsl2
+  private_net: private-net
+  overcloud_node_count: 1
+  public_net:  38.145.32.0/22
+  undercloud_image: CentOS-7-x86_64-GenericCloud-1708
+  undercloud_flavor: m1.large
+  toci_jobtype: multinode-1ctlr-featureset011
+  tripleo_ci_remote: https://git.openstack.org/openstack-infra/tripleo-ci
+  tripleo_ci_branch: master
+  zuul_changes: openstack/tripleo-common:stable/pike:refs/changes/08/523408/10
+  trass_repo: https://github.com/sathlan/traas
