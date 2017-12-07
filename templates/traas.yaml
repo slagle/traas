@@ -68,7 +68,7 @@ parameters:
 
   zuul_branch:
     type: string
-    default: ''
+    default: 'master'
     description: Which branch are we starting from.
 
   ci_changes:
