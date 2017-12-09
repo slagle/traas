@@ -20,7 +20,7 @@ export SUB_NODE_IPS=${SUB_NODE_IPS:-""}
 export TOCI_JOBTYPE=${TOCI_JOBTYPE:-""}
 export SSH_OPTIONS=${SSH_OPTIONS:-'-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=Verbose -o PasswordAuthentication=no -o ConnectionAttempts=32 -i ~/.ssh/id_rsa'}
 export ZUUL_CHANGES=${ZUUL_CHANGES:-""}
-export ZUUL_BRANCH=${ZUUL_CHANGES:-""}
+export ZUUL_BRANCH=${ZUUL_BRANCH:-""}
 export TRIPLEO_CI_REMOTE=${TRIPLEO_CI_REMOTE:-https://github.com/slagle/tripleo-ci}
 export TRIPLEO_CI_BRANCH=${TRIPLEO_CI_BRANCH:-traas}
 export NODEPOOL_REGION=${NODEPOOL_REGION:-dfw}
