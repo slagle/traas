@@ -1,7 +1,7 @@
 parameters:
   overcloud_flavor: m1.large
   overcloud_image: CentOS-7-x86_64-GenericCloud-1708
-  key_name: xpsl2
+  key_name: rdo-cloud
   private_net: private-net
   overcloud_node_count: 1
   public_net:  38.145.32.0/22
