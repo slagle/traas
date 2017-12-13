@@ -136,6 +136,12 @@ resources:
           - '-'
           - - {get_param: 'OS::stack_name'}
             - {get_param: undercloud_name}
+      undercloud_sg:
+        list_join:
+          - '-'
+          - - {get_param: 'OS::stack_name'}
+            - {get_param: undercloud_name}
+            - 'sg'
       undercloud_user_data: {get_attr: [user_data_script, value]}
       private_net: {get_attr: [private_network, private_net]}
       public_net: {get_attr: [public_network, public_net]}

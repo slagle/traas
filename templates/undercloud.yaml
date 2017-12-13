@@ -9,6 +9,8 @@ parameters:
     type: string
   undercloud_name:
     type: string
+  undercloud_sg:
+    type: string
   undercloud_user_data:
     type: string
   private_net:
@@ -20,7 +22,7 @@ resources:
   undercloud_sg:
     type: OS::Neutron::SecurityGroup
     properties:
-      name: undercloud_sg
+      name: {get_param: undercloud_sg}
       description: Ping and SSH
       rules:
       - protocol: icmp
