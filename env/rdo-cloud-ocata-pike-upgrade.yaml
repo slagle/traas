@@ -11,5 +11,6 @@ parameters:
   tripleo_ci_remote: https://git.openstack.org/openstack-infra/tripleo-ci
   tripleo_ci_branch: master
   zuul_changes: openstack/tripleo-common:stable/pike:refs/changes/08/523408/13
+  ci_changes: openstack/tripleo-quickstart:527991
   trass_repo: https://github.com/sathlan/traas
   zuul_branch: stable/pike
