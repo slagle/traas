@@ -119,6 +119,15 @@ resources:
         rm -f /etc/yum.repos.d/delorean*
         rm -rf tripleo-ci
         systemctl daemon-reload
+        rm -rf /var/lib/os-collect-config/*
+        rm -rf /var/run/os-collect-config/*
+        rm -rf /var/lib/cloud/data/cfn-init-data
+        rm -f /var/lib/heat-cfntools/cfn-init-data
+        mkdir /var/lib/os-collect-config/local-data
+        echo '{ "os-collect-config": { "collectors": ["ec2", "request", "local"], "command": "os-refresh-config" } }' > /var/lib/os-collect-config/local-data/00-os-collect-config
+        rm -f /etc/os-collect-config.conf
+        os-apply-config -m /var/lib/os-collect-config/local-data/00-os-collect-config
+
         systemctl enable os-collect-config
         # unbound is required to have local resolver
         yum install -y unbound
