@@ -110,6 +110,7 @@ resources:
       type: string
       value: |
         #!/bin/bash
+        set +x
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
