@@ -116,18 +116,19 @@ resources:
       type: string
       value: |
         #!/bin/bash
+        set -eux
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
         tripleo-ci/scripts/tripleo.sh --repo-setup
         yum -y install python-heat-agent*
         rm -f /etc/yum.repos.d/delorean*
-        rm -rf tripleo-ci
         systemctl daemon-reload
         systemctl enable os-collect-config
         # unbound is required to have local resolver
         yum install -y unbound
         systemctl enable unbound
+
         reboot
 
   undercloud:
