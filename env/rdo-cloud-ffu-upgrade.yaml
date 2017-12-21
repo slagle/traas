@@ -1,12 +1,12 @@
 parameters:
-  overcloud_flavor: m1.large
+  overcloud_flavor: m1.small
   overcloud_image: CentOS-7-x86_64-GenericCloud-1708
   key_name: rdo-cloud
   private_net: private-net
   overcloud_node_count: 1
   public_net:  38.145.32.0/22
   undercloud_image: CentOS-7-x86_64-GenericCloud-1708
-  undercloud_flavor: m1.large
+  undercloud_flavor: m1.small
   toci_jobtype: multinode-1ctlr-featureset036
   ci_changes: openstack/tripleo-quickstart-extras:525680^openstack/tripleo-quickstart:525686^openstack/tripleo-quickstart:519195^openstack-infra/tripleo-ci:526000
   zuul_changes: openstack/tripleo-heat-templates:master:refs/changes/21/499221/20^openstack/tripleo-heat-templates:master:refs/changes/29/515429/14^openstack/tripleo-heat-templates:master:refs/changes/47/522547/6^openstack/tripleo-heat-templates:master:refs/changes/03/522203/7^openstack/tripleo-heat-templates:master:refs/changes/21/514621/15^openstack/tripleo-heat-templates:master:refs/changes/43/521543/9^openstack/tripleo-heat-templates:master:refs/changes/44/521544/9^openstack/tripleo-heat-templates:master:refs/changes/45/521545/9^openstack/tripleo-heat-templates:master:refs/changes/21/522921/5^openstack/tripleo-heat-templates:master:refs/changes/99/523399/4^openstack/tripleo-heat-templates:master:refs/changes/22/522922/5^openstack/tripleo-heat-templates:master:refs/changes/23/522923/5^openstack/tripleo-heat-templates:master:refs/changes/42/526642/1
