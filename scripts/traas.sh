@@ -98,10 +98,6 @@ for PROJFULLREF in $CI_REFS ; do
     fi
 done
 
-pushd tripleo-quickstart
-sudo ./quickstart.sh --install-deps
-pip install .
-popd
 pushd tripleo-quickstart-extras
 pip install .
 popd
