@@ -113,6 +113,7 @@ resources:
         set -eux
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack/tripleo-repos
+        ./tripleo-repos/setup.py install
         export HOME=/root
         tripleo-repos current-tripleo
         yum -y install python-heat-agent*
