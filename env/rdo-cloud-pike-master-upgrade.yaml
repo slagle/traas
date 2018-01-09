@@ -1,0 +1,15 @@
+parameters:
+  overcloud_flavor: m1.large
+  overcloud_image: CentOS-7-x86_64-GenericCloud-1708
+  key_name: rdo-cloud
+  private_net: private-net
+  overcloud_node_count: 1
+  public_net:  38.145.32.0/22
+  undercloud_image: CentOS-7-x86_64-GenericCloud-1708
+  undercloud_flavor: m1.large
+  toci_jobtype: multinode-1ctlr-featureset011
+  tripleo_ci_remote: https://git.openstack.org/openstack-infra/tripleo-ci
+  tripleo_ci_branch: master
+  trass_repo: https://github.com/sathlan/traas
+  ci_changes: openstack/tripleo-quickstart-extras:526006
+  zuul_changes: openstack/tripleo-quickstart-extras:master:refs/changes/06/526006/3^openstack/tripleo-common:master:refs/changes/14/526214/3

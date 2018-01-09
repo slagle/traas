@@ -33,12 +33,28 @@ parameters:
     default: traas
     description: Git branch to use for tripleo-ci repository
 
+  trass_repo:
+    type: string
+    default: "https://github.com/slagle/trass"
+    description: Git remote to use for trass repository
+
+  ci_changes:
+    type: string
+    default: ''
+    description: A caret character separated list of the changes upon which
+                 tripleo-ci, tripleo-quickstart, tripleo-quickstart-extra
+
   zuul_changes:
     type: string
     default: ''
     description: A caret character separated list of the changes upon which
                  this build is dependent upon in the form of a colon character separated
                  list consisting of project name, target branch, and revision ref.
+
+  zuul_branch:
+    type: string
+    default: 'master'
+    description: Which branch are we starting from.
 
 resources:
 
@@ -54,8 +70,10 @@ resources:
         echo export SUB_NODE_IPS=\"$SUB_NODE_IPS\" >> /etc/profile.d/traas.sh
         echo export TOCI_JOBTYPE=\"$TOCI_JOBTYPE\" >> /etc/profile.d/traas.sh
         echo export ZUUL_CHANGES=\"$ZUUL_CHANGES\" >> /etc/profile.d/traas.sh
+        echo export CI_CHANGES=\"$CI_CHANGES\" >> /etc/profile.d/traas.sh
         echo export TRIPLEO_CI_REMOTE=\"$TRIPLEO_CI_REMOTE\" >> /etc/profile.d/traas.sh
         echo export TRIPLEO_CI_BRANCH=\"$TRIPLEO_CI_BRANCH\" >> /etc/profile.d/traas.sh
+        echo export ZUUL_BRANCH=\"$ZUUL_BRANCH\" >> /etc/profile.d/traas.sh
         mkdir -p /etc/nodepool
         if [ ! -f /etc/nodepool/id_rsa ]; then
           ssh-keygen -t rsa -f /etc/nodepool/id_rsa
@@ -78,6 +96,12 @@ resources:
         - name: ZUUL_CHANGES
           type: String
           description: ZUUL_CHANGES variable containing patches to be tested in toci job
+        - name: ZUUL_BRANCH
+          type: String
+          description: ZUUL_BRANCH which branch we want to start from
+        - name: CI_CHANGES
+          type: String
+          description: CI_CHANGES variable containing patches for boostraping oooq
         - name: TRIPLEO_CI_REMOTE
           type: String
           description: Git remote to use for tripleo-ci repository
@@ -105,6 +129,8 @@ resources:
         TRIPLEO_CI_REMOTE: {get_param: tripleo_ci_remote}
         TRIPLEO_CI_BRANCH: {get_param: tripleo_ci_branch}
         ZUUL_CHANGES: {get_param: zuul_changes}
+        ZUUL_BRANCH: {get_param: zuul_branch}
+        CI_CHANGES: {get_param: ci_changes}
 
   DisconnectFromHostHeat:
     type: OS::Heat::Value
@@ -171,10 +197,7 @@ resources:
             $disconnect_snippet
 
             rpm -q git || yum -y install git
-            su -l centos -c "git clone https://github.com/jfrancoa/traas"
-            sudo yum install -y centos-release-openstack-pike
-            sudo yum install -y python-os-testr
-            sudo yum autoremove -y centos-release-openstack-pike
+            su -l centos -c "git clone $trass_repo"
             su -l centos -c /home/centos/traas/scripts/traas.sh &
 
             # This is pretty hacky, meh.
@@ -184,6 +207,7 @@ resources:
             exit 0
           params:
             $disconnect_snippet: {get_attr: [DisconnectFromHostHeat, value]}
+            $trass_repo: {get_param: trass_repo}
       inputs:
         - name: PRIMARY_NODE_IP
           type: String
@@ -197,6 +221,9 @@ resources:
         - name: ZUUL_CHANGES
           type: String
           description: ZUUL_CHANGES variable containing patches to be tested in toci job
+        - name: CI_CHANGES
+          type: String
+          description: CI_CHANGES variable containing patches to be applied at quickstart bootstrap
         - name: TRIPLEO_CI_REMOTE
           type: String
           description: Git remote to use for tripleo-ci repository

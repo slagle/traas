@@ -66,6 +66,17 @@ parameters:
                  this build is dependent upon in the form of a colon character separated
                  list consisting of project name, target branch, and revision ref.
 
+  zuul_branch:
+    type: string
+    default: 'master'
+    description: Which branch are we starting from.
+
+  ci_changes:
+    type: string
+    default: ''
+    description: A caret character separated list of the changes upon which
+                 tripleo-ci, tripleo-quickstart, tripleo-quickstart-extra
+
   tripleo_ci_remote:
     type: string
     default: "https://github.com/slagle/tripleo-ci"
@@ -76,6 +87,10 @@ parameters:
     default: traas
     description: Git branch to use for tripleo-ci repository
 
+  trass_repo:
+    type: string
+    default: "https://github.com/slagle/trass"
+    description: Git remote to use for trass repository
 
 resources:
 
@@ -95,18 +110,19 @@ resources:
       type: string
       value: |
         #!/bin/bash
+        set -eux
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
         tripleo-ci/scripts/tripleo.sh --repo-setup
         yum -y install python-heat-agent*
         rm -f /etc/yum.repos.d/delorean*
-        rm -rf tripleo-ci
         systemctl daemon-reload
         systemctl enable os-collect-config
         # unbound is required to have local resolver
         yum install -y unbound
         systemctl enable unbound
+
         reboot
 
   undercloud:
@@ -151,7 +167,10 @@ resources:
       overcloud_private_ips: {get_attr: [overcloud_nodes, resource.overcloud_nodes, overcloud_private_ip]}
       toci_jobtype: {get_param: toci_jobtype}
       zuul_changes: {get_param: zuul_changes}
+      zuul_branch: {get_param: zuul_branch}
+      ci_changes: {get_param: ci_changes}
       tripleo_ci_remote: {get_param: tripleo_ci_remote}
       tripleo_ci_branch: {get_param: tripleo_ci_branch}
+      trass_repo: {get_param: trass_repo}
 
 outputs:
