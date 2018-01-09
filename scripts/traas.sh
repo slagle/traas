@@ -101,9 +101,6 @@ for PROJFULLREF in $CI_REFS ; do
     fi
 done
 
-pushd tripleo-quickstart-extras
-pip install .
-popd
 
 if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
     $TRIPLEO_ROOT/tripleo-ci/scripts/tripleo.sh --setup-nodepool-files
