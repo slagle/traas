@@ -112,9 +112,9 @@ resources:
         #!/bin/bash
         set -eux
         rpm -q git || yum -y install git
-        git clone https://git.openstack.org/openstack/tripleo-repos
+        git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
-        tripleo-repos current-tripleo
+        tripleo-ci/scripts/tripleo.sh --repo-setup
         yum -y install python-heat-agent*
         rm -f /etc/yum.repos.d/delorean*
         systemctl daemon-reload
