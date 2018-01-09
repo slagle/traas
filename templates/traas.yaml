@@ -71,6 +71,16 @@ parameters:
     default: 'master'
     description: Which branch are we starting from.
 
+  undercloud_branch:
+    type: string
+    default: 'master'
+    description: Branch for boostraping undercloud
+
+  overcloud_branch:
+    type: string
+    default: 'master'
+    description: Branch for boostraping overcloud
+
   ci_changes:
     type: string
     default: ''
@@ -110,19 +120,45 @@ resources:
     properties:
       private_net: {get_param: private_net}
 
+  overcloud_user_data_script_branch:
+    type: OS::Heat::Value
+    properties:
+      type: string
+      value:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -eux
+            BRANCH="$branch"
+          params:
+            $branch: {get_param: overcloud_branch}
+
+  undercloud_user_data_script_branch:
+    type: OS::Heat::Value
+    properties:
+      type: string
+      value:
+        str_replace:
+          template: |
+            #!/bin/bash
+            set -eux
+            BRANCH="$branch"
+          params:
+            $branch: {get_param: undercloud_branch}
+
   user_data_script:
     type: OS::Heat::Value
     properties:
       type: string
       value: |
-        #!/bin/bash
-        set -eux
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
-        tripleo-ci/scripts/tripleo.sh --repo-setup
+        BRANCH=${BRANCH#stable/}
+        env STABLE_RELEASE=${BRANCH} tripleo-ci/scripts/tripleo.sh --repo-setup
         yum -y install python-heat-agent*
         rm -f /etc/yum.repos.d/delorean*
+        yum clean metadata
         systemctl daemon-reload
         systemctl enable os-collect-config
         # unbound is required to have local resolver
@@ -143,7 +179,11 @@ resources:
           - '-'
           - - {get_param: 'OS::stack_name'}
             - {get_param: undercloud_name}
-      undercloud_user_data: {get_attr: [user_data_script, value]}
+      undercloud_user_data:
+        list_join:
+          - '\n'
+          - - {get_attr: [undercloud_user_data_script_branch, value]}
+            - {get_attr: [user_data_script, value]}
       private_net: {get_attr: [private_network, private_net]}
       public_net: {get_attr: [public_network, public_net]}
 
@@ -156,7 +196,11 @@ resources:
       key_name: {get_param: key_name}
       overcloud_node_count: {get_param: overcloud_node_count}
       private_net: {get_attr: [private_network, private_net]}
-      overcloud_user_data: {get_attr: [user_data_script, value]}
+      overcloud_user_data:
+        list_join:
+          - '\n'
+          - - {get_attr: [overcloud_user_data_script_branch, value]}
+            - {get_attr: [user_data_script, value]}
       overcloud_name:
         list_join:
           - '-'
