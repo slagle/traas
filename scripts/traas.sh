@@ -23,6 +23,8 @@ export ZUUL_CHANGES=${ZUUL_CHANGES:-""}
 export TRIPLEO_CI_REMOTE=${TRIPLEO_CI_REMOTE:-https://github.com/slagle/tripleo-ci}
 export TRIPLEO_CI_BRANCH=${TRIPLEO_CI_BRANCH:-traas}
 export EXTRA_VARS=${EXTRA_VARS:-""}
+export STABLE_RELEASE=${STABLE_RELEASE:-"master"}
+
 EXTRA_VARS="$EXTRA_VARS --extra-vars vxlan_mtu=1400"
 
 

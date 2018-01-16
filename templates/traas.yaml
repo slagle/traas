@@ -76,6 +76,16 @@ parameters:
     default: traas
     description: Git branch to use for tripleo-ci repository
 
+  traas_repository:
+    type: string
+    default: 'https://github.com/slagle/traas'
+    description: Traas git repository
+
+  stable_release:
+    type: string
+    default: master
+    description: Release to be used by --release quickstart option
+
 
 resources:
 
@@ -153,5 +163,7 @@ resources:
       zuul_changes: {get_param: zuul_changes}
       tripleo_ci_remote: {get_param: tripleo_ci_remote}
       tripleo_ci_branch: {get_param: tripleo_ci_branch}
+      stable_release: {get_param: stable_release}
+      traas_repository: {get_param: traas_repository}
 
 outputs:
