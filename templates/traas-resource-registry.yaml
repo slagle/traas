@@ -7,3 +7,4 @@ resource_registry:
   OS::TraaS::OvercloudNodes: overcloud-nodes.yaml
   OS::TraaS::TociJob: toci-job.yaml
   OS::TraaS::NodeExtraConfig: OS::Heat::None
+  OS::TraaS::Swap: swap.yaml
