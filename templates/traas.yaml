@@ -156,7 +156,7 @@ resources:
         export HOME=/root
         BRANCH=${BRANCH#stable/}
         env STABLE_RELEASE=${BRANCH} tripleo-ci/scripts/tripleo.sh --repo-setup
-        yum -y install python-heat-agent*
+        yum -y install python-heat-agent* jq vim
         rm -f /etc/yum.repos.d/delorean*
         yum clean metadata
         systemctl daemon-reload
