@@ -24,19 +24,30 @@ parameters:
     default: 1
     description: Number of overcloud nodes to deploy
 
-  private_net:
+  private_net_admin:
     type: string
     default: private
     description: Name of a private network which can have floating ips associated with it
+
+  private_subnet_admin:
+    type: string
+
+  private_net_cluster:
+    type: string
+    description: Name of a private cluster network which has no floating ips associated
+
+  private_subnet_cluster:
+    type: string
 
   overcloud_name:
     type: string
     default: overcloud
     description: Name of the overcloud instances. The name will be prefixed with the stack name.
 
-  default_sg:
+  sg:
     type: string
-    default: all_sg
+    default: ''
+    description: Neutron sec group
 
   overcloud_user_data:
     type: string
@@ -53,8 +64,12 @@ resources:
           overcloud_flavor: {get_param: overcloud_flavor}
           overcloud_image: {get_param: overcloud_image}
           key_name: {get_param: key_name}
-          private_net: {get_param: private_net}
+          private_net_admin: {get_param: private_net_admin}
+          private_subnet_admin: {get_param: private_subnet_admin}
+          private_net_cluster: {get_param: private_net_cluster}
+          private_subnet_cluster: {get_param: private_subnet_cluster}
           overcloud_user_data: {get_param: overcloud_user_data}
+          sg: {get_param: sg}
           overcloud_name:
             list_join:
               - '-'

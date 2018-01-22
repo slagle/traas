@@ -23,10 +23,29 @@ parameters:
     default: 2
     description: Number of overcloud instances to deploy
 
-  private_net:
+  private_net_admin:
     type: string
     default: private
-    description: Name of a private network which will be associated with all instances
+    description: |
+      Name of an existing admin private network which will be associated with
+      servers. Expects a pre-created router, network w/ DHCP, DNS and a subnet.
+
+  private_subnet_admin:
+    type: string
+    default: private
+    description: An existing subnet of the admin private network.
+
+  private_net_cluster:
+    type: string
+    default: private2
+    description: |
+      Name of a cluster private network which will be associated with servers.
+      Expects a pre-created router, network w/ DHCP, DNS and a subnet.
+
+  private_subnet_cluster:
+    type: string
+    default: private2
+    description: Name of a cluster private subnet for the cluster net.
 
   public_net:
     type: string
@@ -53,6 +72,11 @@ parameters:
     type: string
     default: CentOS-7-x86_64-GenericCloud-1503
     description: Image to boot as the undercloud instance
+
+  cluster_ingress_cidr:
+    type: string
+    default: 0.0.0.0/0
+    description: Allows TCP/UDP access to undercloud node from that source CIDR only
 
   toci_jobtype:
     type: string
@@ -107,18 +131,49 @@ parameters:
     default: master
     description: Release to be used by --release quickstart option
 
-
 resources:
+
+  sg_uc:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: sg_uc
+      description: Sec group for UC
+      rules:
+      - protocol: icmp
+      - direction: ingress
+        protocol: udp
+        remote_ip_prefix: { get_param: cluster_ingress_cidr }
+      - direction: ingress
+        protocol: tcp
+        remote_ip_prefix: { get_param: cluster_ingress_cidr }
+
+  sg_oc:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      name: sg_oc
+      description: Sec group for overcloud cluster
+      rules:
+      - protocol: icmp
+      - direction: ingress
+        protocol: udp
+      - direction: ingress
+        protocol: tcp
 
   public_network:
     type: OS::TraaS::PublicNetwork
     properties:
       public_net: {get_param: public_net}
 
-  private_network:
-    type: OS::TraaS::PrivateNetwork
+  private_network_admin:
+    type: OS::TraaS::PrivateNetworkAdmin
     properties:
-      private_net: {get_param: private_net}
+      private_net_admin: {get_param: private_net_admin}
+
+  private_network_cluster:
+    type: OS::TraaS::PrivateNetworkCluster
+    properties:
+      private_net_cluster: {get_param: private_net_cluster}
+      private_subnet_cluster: {get_param: private_subnet_cluster}
 
   overcloud_user_data_script_branch:
     type: OS::Heat::Value
@@ -168,12 +223,13 @@ resources:
         reboot
 
   undercloud:
-    depends_on: [public_network]
+    depends_on: [public_network, private_network_cluster]
     type: OS::TraaS::Undercloud
     properties:
       undercloud_flavor: {get_param: undercloud_flavor}
       undercloud_image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
+      sg: {get_resource: sg_uc}
       undercloud_name:
         list_join:
           - '-'
@@ -184,18 +240,23 @@ resources:
           - '\n'
           - - {get_attr: [undercloud_user_data_script_branch, value]}
             - {get_attr: [user_data_script, value]}
-      private_net: {get_attr: [private_network, private_net]}
+      private_net_admin: {get_attr: [private_network_admin, private_net_admin]}
+      private_net_cluster: {get_attr: [private_network_cluster, private_net_cluster]}
       public_net: {get_attr: [public_network, public_net]}
 
   overcloud_nodes:
     type: OS::TraaS::OvercloudNodes
-    depends_on: [private_network]
+    depends_on: [private_network_admin, private_network_cluster]
     properties:
       overcloud_flavor: {get_param: overcloud_flavor}
       overcloud_image: {get_param: overcloud_image}
       key_name: {get_param: key_name}
       overcloud_node_count: {get_param: overcloud_node_count}
-      private_net: {get_attr: [private_network, private_net]}
+      private_net_admin: {get_attr: [private_network_admin, private_net_admin]}
+      private_subnet_admin: {get_attr: [private_network_admin, private_subnet_admin]}
+      private_net_cluster: {get_attr: [private_network_cluster, private_net_cluster]}
+      private_subnet_cluster: {get_attr: [private_network_cluster, private_subnet_cluster]}
+      sg: {get_resource: sg_oc}
       overcloud_user_data:
         list_join:
           - '\n'

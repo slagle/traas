@@ -14,23 +14,43 @@ parameters:
   overcloud_name:
     type: string
 
-  private_net:
+  private_net_admin:
+    type: string
+
+  private_subnet_admin:
+    type: string
+
+  private_net_cluster:
+    type: string
+
+  private_subnet_cluster:
     type: string
 
   overcloud_user_data:
     type: string
 
+  sg:
+    type: string
+
 resources:
-  overcloud_sg:
-    type: OS::Neutron::SecurityGroup
+
+  admin_port:
+    type: OS::Neutron::Port
     properties:
-      name: overcloud_sg
-      description: Ping and SSH
-      rules:
-      - protocol: icmp
-      - protocol: tcp
-        port_range_min: 22
-        port_range_max: 22
+      network: {get_param: private_net_admin}
+      fixed_ips:
+        - subnet: {get_param: private_subnet_admin}
+      security_groups:
+        - "default"
+        - {get_param: sg}
+
+  data_port:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_cluster}
+      port_security_enabled: false
+      fixed_ips:
+        - subnet: {get_param: private_subnet_cluster}
 
   overcloud_node:
     type: OS::Nova::Server
@@ -41,10 +61,8 @@ resources:
       key_name: {get_param: key_name}
       user_data_format: SOFTWARE_CONFIG
       networks:
-        - {network: {get_param: private_net}}
-      security_groups:
-        - "default"
-        - {get_resource: overcloud_sg}
+        - {port: {get_resource: admin_port}}
+        - {port: {get_resource: data_port}}
       name: {get_param: overcloud_name}
       software_config_transport: POLL_SERVER_HEAT
       user_data: {get_param: overcloud_user_data}
@@ -60,10 +78,10 @@ outputs:
     description: "overcloud node resource"
     value: {get_resource: overcloud_node}
   overcloud_private_ip:
-    description: "private ip of the overcloud instance"
+    description: "private admin ip of the overcloud instance"
     value:
       get_attr:
         - overcloud_node
         - networks
-        - {get_param: private_net}
+        - {get_param: private_net_admin}
         - 0

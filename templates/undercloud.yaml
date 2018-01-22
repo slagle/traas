@@ -1,4 +1,4 @@
-heat_template_version: 2015-04-30
+heat_template_version: newton
 
 parameters:
   undercloud_flavor:
@@ -11,22 +11,18 @@ parameters:
     type: string
   undercloud_user_data:
     type: string
-  private_net:
+  private_net_admin:
+    type: string
+  private_net_cluster:
     type: string
   public_net:
     type: string
+    default: ''
+  sg:
+    type: string
+    description: Neutron sec group
 
 resources:
-  undercloud_sg:
-    type: OS::Neutron::SecurityGroup
-    properties:
-      name: undercloud_sg
-      description: Ping and SSH
-      rules:
-      - protocol: icmp
-      - protocol: tcp
-        port_range_min: 22
-        port_range_max: 22
 
   undercloud_server:
     type: OS::Nova::Server
@@ -35,10 +31,10 @@ resources:
       image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
       networks:
-      - network: {get_param: private_net}
+      - network: {get_param: private_net_admin}
+      - network: {get_param: private_net_cluster}
       security_groups:
-        - "default"
-        - {get_resource: undercloud_sg}
+        - {get_param: sg}
       name: {get_param: undercloud_name}
       user_data_format: SOFTWARE_CONFIG
       user_data: {get_param: undercloud_user_data}
@@ -52,7 +48,7 @@ resources:
         get_attr:
           - undercloud_server
           - addresses
-          - {get_param: private_net}
+          - {get_param: private_net_admin}
           - 0
           - port
 
@@ -70,10 +66,10 @@ outputs:
     value:
       get_attr: [undercloud_floating_ip, undercloud_floating_ip]
   undercloud_private_ip:
-    description: "private ip of the undercloud instance"
+    description: "private admin ip of the undercloud instance"
     value:
       get_attr:
         - undercloud_server
         - networks
-        - {get_param: private_net}
+        - {get_param: private_net_admin}
         - 0

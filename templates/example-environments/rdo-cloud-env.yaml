@@ -2,9 +2,14 @@ parameters:
   overcloud_flavor: m1.large
   overcloud_image: CentOS-7-x86_64-GenericCloud-1708
   key_name: jslagle-rdo-cloud
-  private_net: private
+  private_net_admin: private
+  private_net_cluster: private2
+  private_subnet_admin: private
+  private_subnet_cluster: private2
   overcloud_node_count: 1
   public_net:  38.145.32.0/22
   undercloud_image: CentOS-7-x86_64-GenericCloud-1708
   undercloud_flavor: m1.large
   toci_jobtype: multinode-1ctlr-featureset004
+  # See `curl https://api.ipify.org` to get your control/admin box IP
+  #cluster_ingress_cidr: <external IP/32 of control/admin node to access nodes>

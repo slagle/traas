@@ -1,7 +1,8 @@
 resource_registry:
   OS::TraaS::Undercloud: undercloud.yaml
   OS::TraaS::UndercloudFloating: undercloud-floating.yaml
-  OS::TraaS::PrivateNetwork: private-net-existing.yaml
+  OS::TraaS::PrivateNetworkAdmin: private-networks-admin-existing.yaml
+  OS::TraaS::PrivateNetworkCluster: private-networks-cluster-existing.yaml
   OS::TraaS::PublicNetwork: public-net-existing.yaml
   OS::TraaS::OvercloudNode: overcloud-node.yaml
   OS::TraaS::OvercloudNodes: overcloud-nodes.yaml
