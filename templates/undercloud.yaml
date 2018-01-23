@@ -66,10 +66,10 @@ outputs:
     value:
       get_attr: [undercloud_floating_ip, undercloud_floating_ip]
   undercloud_private_ip:
-    description: "private admin ip of the undercloud instance"
+    description: "private cluster ip of the undercloud instance"
     value:
       get_attr:
         - undercloud_server
         - networks
-        - {get_param: private_net_admin}
+        - {get_param: private_net_cluster}
         - 0

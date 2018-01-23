@@ -78,10 +78,10 @@ outputs:
     description: "overcloud node resource"
     value: {get_resource: overcloud_node}
   overcloud_private_ip:
-    description: "private admin ip of the overcloud instance"
+    description: "private cluster ip of the overcloud instance"
     value:
       get_attr:
         - overcloud_node
         - networks
-        - {get_param: private_net_admin}
+        - {get_param: private_net_cluster}
         - 0
