@@ -206,6 +206,15 @@ resources:
     properties:
       type: string
       value: |
+        echo 'GATEWAYDEV=eth1' >> /etc/sysconfig/network
+        cat >/etc/sysconfig/network-scripts/ifcfg-eth1<<EOF
+        DEVICE=eth1
+        BOOTPROTO=dhcp
+        ONBOOT=yes
+        EOF
+        ifup eth1
+        ip ro replace default dev eth1
+        systemctl restart network
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
