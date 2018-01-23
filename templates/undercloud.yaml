@@ -13,7 +13,11 @@ parameters:
     type: string
   private_net_admin:
     type: string
+  private_subnet_admin:
+    type: string
   private_net_cluster:
+    type: string
+  private_subnet_cluster:
     type: string
   public_net:
     type: string
@@ -24,6 +28,23 @@ parameters:
 
 resources:
 
+  uc_admin_port:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_admin}
+      fixed_ips:
+        - subnet: {get_param: private_subnet_admin}
+      security_groups:
+        - {get_param: sg}
+
+  uc_data_port:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_cluster}
+      port_security_enabled: false
+      fixed_ips:
+        - subnet: {get_param: private_subnet_cluster}
+
   undercloud_server:
     type: OS::Nova::Server
     properties:
@@ -31,10 +52,8 @@ resources:
       image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
       networks:
-      - network: {get_param: private_net_cluster}
-      - network: {get_param: private_net_admin}
-      security_groups:
-        - {get_param: sg}
+        - {port: {get_resource: uc_data_port}}
+        - {port: {get_resource: uc_admin_port}}
       name: {get_param: undercloud_name}
       user_data_format: SOFTWARE_CONFIG
       user_data: {get_param: undercloud_user_data}

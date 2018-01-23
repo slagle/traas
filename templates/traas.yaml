@@ -168,6 +168,7 @@ resources:
     type: OS::TraaS::PrivateNetworkAdmin
     properties:
       private_net_admin: {get_param: private_net_admin}
+      private_subnet_admin: {get_param: private_subnet_admin}
 
   private_network_cluster:
     type: OS::TraaS::PrivateNetworkCluster
@@ -232,7 +233,7 @@ resources:
         reboot
 
   undercloud:
-    depends_on: [public_network, private_network_cluster]
+    depends_on: [public_network, private_network_admin, private_network_cluster]
     type: OS::TraaS::Undercloud
     properties:
       undercloud_flavor: {get_param: undercloud_flavor}
@@ -250,7 +251,9 @@ resources:
           - - {get_attr: [undercloud_user_data_script_branch, value]}
             - {get_attr: [user_data_script, value]}
       private_net_admin: {get_attr: [private_network_admin, private_net_admin]}
+      private_subnet_admin: {get_attr: [private_network_admin, private_subnet_admin]}
       private_net_cluster: {get_attr: [private_network_cluster, private_net_cluster]}
+      private_subnet_cluster: {get_attr: [private_network_cluster, private_subnet_cluster]}
       public_net: {get_attr: [public_network, public_net]}
 
   overcloud_nodes:
