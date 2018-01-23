@@ -31,8 +31,8 @@ resources:
       image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
       networks:
-      - network: {get_param: private_net_admin}
       - network: {get_param: private_net_cluster}
+      - network: {get_param: private_net_admin}
       security_groups:
         - {get_param: sg}
       name: {get_param: undercloud_name}

@@ -61,8 +61,8 @@ resources:
       key_name: {get_param: key_name}
       user_data_format: SOFTWARE_CONFIG
       networks:
-        - {port: {get_resource: admin_port}}
         - {port: {get_resource: data_port}}
+        - {port: {get_resource: admin_port}}
       name: {get_param: overcloud_name}
       software_config_transport: POLL_SERVER_HEAT
       user_data: {get_param: overcloud_user_data}
