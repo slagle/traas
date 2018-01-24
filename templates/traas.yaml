@@ -216,6 +216,7 @@ resources:
         ifup eth1
         ip ro replace default dev eth1
         systemctl restart network
+        while ! ping -c3 -W5 mirrorlist.centos.org; do sleep 30; done
         rpm -q git || yum -y install git
         git clone https://git.openstack.org/openstack-infra/tripleo-ci
         export HOME=/root
