@@ -56,6 +56,11 @@ resources:
           - 0
           - port
 
+  undercloud_swap:
+    type: OS::TraaS::Swap
+    properties:
+      server: {get_resource: undercloud_server}
+
 outputs:
   undercloud_server:
     description: "undercloud server resource"

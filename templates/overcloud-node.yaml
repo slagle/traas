@@ -49,6 +49,11 @@ resources:
       software_config_transport: POLL_SERVER_HEAT
       user_data: {get_param: overcloud_user_data}
 
+  undercloud_swap:
+    type: OS::TraaS::Swap
+    properties:
+      server: {get_resource: overcloud_node}
+
 outputs:
 
   overcloud_node:

@@ -15,11 +15,14 @@ export PS4='+(${BASH_SOURCE}:${LINENO}): ${FUNCNAME[0]:+${FUNCNAME[0]}(): }'
 export TOCI_JOBTYPE=${TOCI_JOBTYPE:-"multinode-nonha-oooq"}
 export MTU=1400
 export DO_SETUP_NODEPOOL_FILES=${DO_SETUP_NODEPOOL_FILES:-"1"}
+export NODEPOOL_REGION=${NODEPOOL_REGION:-dfw}
+export NODEPOOL_CLOUD=${NODEPOOL_CLOUD:-rax}
 export PRIMARY_NODE_IP=${PRIMARY_NODE_IP:-""}
 export SUB_NODE_IPS=${SUB_NODE_IPS:-""}
 export TOCI_JOBTYPE=${TOCI_JOBTYPE:-""}
 export SSH_OPTIONS=${SSH_OPTIONS:-'-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=Verbose -o PasswordAuthentication=no -o ConnectionAttempts=32 -i ~/.ssh/id_rsa'}
 export ZUUL_CHANGES=${ZUUL_CHANGES:-""}
+export ZUUL_BRANCH=${ZUUL_BRANCH:-""}
 export TRIPLEO_CI_REMOTE=${TRIPLEO_CI_REMOTE:-https://github.com/slagle/tripleo-ci}
 export TRIPLEO_CI_BRANCH=${TRIPLEO_CI_BRANCH:-traas}
 export EXTRA_VARS=${EXTRA_VARS:-""}
@@ -44,7 +47,7 @@ check_var TOCI_JOBTYPE
 # Update openssh before the test builds are installed by tripleo-ci
 # See https://review.openstack.org/#/c/437683/
 sudo yum -y update openssh
-
+sudo yum -y install patch wget
 rpm -q git || sudo yum -y install git
 rpm -q python-virtualenv || sudo yum -y install python-virtualenv
 
@@ -55,40 +58,9 @@ source workspace/.quickstart/bin/activate
 set -u
 pip install pip --upgrade
 
+CI_REFS=${CI_CHANGES//^/ }
 ZUUL_REFS=${ZUUL_CHANGES//^/ }
 
-for PROJFULLREF in $ZUUL_REFS ; do
-    OLDIFS=$IFS
-    IFS=: change=($PROJFULLREF)
-    IFS=$OLDIFS
-    echo ${change[*]}
-    project=${change[0]}
-    branch=${change[1]}
-    ref=${change[2]}
-    if [ "$project" = "openstack-infra/tripleo-ci" ]; then
-        git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
-        pushd tripleo-ci
-        git fetch https://git.openstack.org/openstack-infra/tripleo-ci $ref && git checkout FETCH_HEAD
-        popd
-    fi
-    if [ "$project" = "openstack/tripleo-quickstart" ]; then
-        rm -rf tripleo-quickstart
-        git clone https://git.openstack.org/openstack/tripleo-quickstart
-        pushd tripleo-quickstart
-        git fetch https://git.openstack.org/openstack/tripleo-quickstart $ref && git checkout FETCH_HEAD
-        sudo ./quickstart.sh --install-deps
-        pip install .
-        popd
-    fi
-    if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
-        rm -rf tripleo-quickstart-extras
-        git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
-        pushd tripleo-quickstart-extras
-        git fetch https://git.openstack.org/openstack/tripleo-quickstart-extras $ref && git checkout FETCH_HEAD
-        pip install .
-        popd
-    fi
-done
 
 if [ ! -d tripleo-ci ]; then
     git clone -b $TRIPLEO_CI_BRANCH $TRIPLEO_CI_REMOTE
@@ -101,6 +73,34 @@ fi
 if [ ! -d tripleo-quickstart-extras ]; then
     git clone https://git.openstack.org/openstack/tripleo-quickstart-extras
 fi
+
+for PROJFULLREF in $CI_REFS ; do
+    OLDIFS=$IFS
+    IFS=: change=($PROJFULLREF)
+    IFS=$OLDIFS
+    echo ${change[*]}
+    project=${change[0]}
+    change=${change[1]}
+    if [ "$project" = "openstack-infra/tripleo-ci" ]; then
+        curl https://review.openstack.org/changes/${change}/revisions/current/patch?download | \
+            base64 -d | \
+            sudo patch -f -d ./tripleo-ci -p1
+    fi
+    if [ "$project" = "openstack/tripleo-quickstart" ]; then
+        curl https://review.openstack.org/changes/${change}/revisions/current/patch?download | \
+            base64 -d | \
+            sudo patch -f -d ./tripleo-quickstart -p1
+    fi
+    if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
+        curl https://review.openstack.org/changes/${change}/revisions/current/patch?download | \
+            base64 -d | \
+            sudo patch -f -d ./tripleo-quickstart-extras -p1
+    fi
+done
+
+pushd tripleo-quickstart-extras
+pip install .
+popd
 
 if [ "$DO_SETUP_NODEPOOL_FILES" = "1" ]; then
     $TRIPLEO_ROOT/tripleo-ci/scripts/tripleo.sh --setup-nodepool-files
