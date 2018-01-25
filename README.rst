@@ -36,3 +36,13 @@ default nonha multinode job used upstream in tripleo-ci.
 
 It executes the ci job end to end and then leaves the environment up at the end
 for inspection and/or development.
+
+If you need your overcloud or overcloud to use a particular
+overcloud-full.tar images you can use the
+`./scripts/upload-overcloud.sh` utility.
+
+For instance to get pike overcloud images in your account:
+
+    ./scripts/upload-overcloud.sh http://66.187.229.139/builds-pike/current-tripleo/overcloud-full.tar overcloud-pike-full
+
+That’s it.
