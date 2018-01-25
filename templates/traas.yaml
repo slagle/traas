@@ -108,6 +108,16 @@ parameters:
     description: Release to be used by --release quickstart option
 
 
+  undercloud_extra_pkg:
+    type: string
+    default: ""
+    description: list of extra packages to install on the undercloud.
+
+  overcloud_extra_pkg:
+    type: string
+    default: ""
+    description: list of extra packages to install on the overcloud.
+
 resources:
 
   public_network:
@@ -130,8 +140,13 @@ resources:
             #!/bin/bash
             set -eux
             BRANCH="$branch"
+            YUM_EXTRA=""
+            if [ -n "$extra_pkg" ]; then
+               YUM_EXTRA="yum reinstall -y $extra_pkg"
+            fi
           params:
             $branch: {get_param: overcloud_branch}
+            $extra_pkg: {get_param: overcloud_extra_pkg}
 
   undercloud_user_data_script_branch:
     type: OS::Heat::Value
@@ -143,8 +158,13 @@ resources:
             #!/bin/bash
             set -eux
             BRANCH="$branch"
+            YUM_EXTRA=""
+            if [ -n "$extra_pkg" ]; then
+               YUM_EXTRA="yum install -y $extra_pkg"
+            fi
           params:
             $branch: {get_param: undercloud_branch}
+            $extra_pkg: {get_param: undercloud_extra_pkg}
 
   user_data_script:
     type: OS::Heat::Value
@@ -157,6 +177,7 @@ resources:
         BRANCH=${BRANCH#stable/}
         env STABLE_RELEASE=${BRANCH} tripleo-ci/scripts/tripleo.sh --repo-setup
         yum -y install python-heat-agent* jq vim
+        $YUM_EXTRA
         rm -f /etc/yum.repos.d/delorean*
         yum clean metadata
         systemctl daemon-reload
