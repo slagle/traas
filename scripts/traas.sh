@@ -81,20 +81,16 @@ for PROJFULLREF in $CI_REFS ; do
     echo ${change[*]}
     project=${change[0]}
     change=${change[1]}
-    if [ "$project" = "openstack-infra/tripleo-ci" ]; then
+    if [[ $project =~ openstack-infra/tripleo-ci|openstack/tripleo-quickstart|openstack/tripleo-quickstart-extras ]]; then
         curl https://review.openstack.org/changes/${change}/revisions/current/patch?download | \
             base64 -d | \
-            sudo patch -f -d ./tripleo-ci -p1
-    fi
-    if [ "$project" = "openstack/tripleo-quickstart" ]; then
-        curl https://review.openstack.org/changes/${change}/revisions/current/patch?download | \
-            base64 -d | \
-            sudo patch -f -d ./tripleo-quickstart -p1
-    fi
-    if [ "$project" = "openstack/tripleo-quickstart-extras" ]; then
-        curl https://review.openstack.org/changes/${change}/revisions/current/patch?download | \
-            base64 -d | \
-            sudo patch -f -d ./tripleo-quickstart-extras -p1
+            sudo patch -f -d ./${project##*/} -p1
+    else
+        echo "Not proper repo, ci_changes must be used exclusively for:"
+        echo " - tripleo-quickstart"
+        echo " - tripleo-quickstart-extra"
+        echo " - tripleo-ci"
+        exit 1
     fi
 done
 
