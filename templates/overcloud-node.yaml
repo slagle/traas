@@ -20,10 +20,22 @@ parameters:
   private_subnet_admin:
     type: string
 
-  private_net_cluster:
+  private_net_cluster1:
     type: string
 
-  private_subnet_cluster:
+  private_subnet_cluster1:
+    type: string
+
+  private_net_cluster2:
+    type: string
+
+  private_subnet_cluster2:
+    type: string
+
+  private_net_cluster3:
+    type: string
+
+  private_subnet_cluster3:
     type: string
 
   overcloud_user_data:
@@ -44,13 +56,29 @@ resources:
         - "default"
         - {get_param: sg}
 
-  data_port:
+  data_port1:
     type: OS::Neutron::Port
     properties:
-      network: {get_param: private_net_cluster}
+      network: {get_param: private_net_cluster1}
       port_security_enabled: false
       fixed_ips:
-        - subnet: {get_param: private_subnet_cluster}
+        - subnet: {get_param: private_subnet_cluster1}
+
+  data_port2:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_cluster2}
+      port_security_enabled: false
+      fixed_ips:
+        - subnet: {get_param: private_subnet_cluster2}
+
+  data_port3:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_cluster3}
+      port_security_enabled: false
+      fixed_ips:
+        - subnet: {get_param: private_subnet_cluster3}
 
   overcloud_node:
     type: OS::Nova::Server
@@ -61,7 +89,9 @@ resources:
       key_name: {get_param: key_name}
       user_data_format: SOFTWARE_CONFIG
       networks:
-        - {port: {get_resource: data_port}}
+        - {port: {get_resource: data_port1}}
+        - {port: {get_resource: data_port2}}
+        - {port: {get_resource: data_port3}}
         - {port: {get_resource: admin_port}}
       name: {get_param: overcloud_name}
       software_config_transport: POLL_SERVER_HEAT
@@ -83,5 +113,5 @@ outputs:
       get_attr:
         - overcloud_node
         - networks
-        - {get_param: private_net_cluster}
+        - {get_param: private_net_cluster1}
         - 0

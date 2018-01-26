@@ -49,17 +49,18 @@ Undercloud connections via floating IP are limited with `cluster_ingress_cidr`.
 By default, it allows all remote IPs. Make sure to restrict it to the public IP
 address of your remote admin/control node, if applicable.
 
-Another two provider private networks define admin and cluster networks for
-TripleO deployments. The admin network is only used for SSH access. Floating IP
-is associated only to the undercloud port connected to that network. Ingress
-rules, DNS setup and routing apply via that admin interface (connected as eth1)
-as well. Overcloud nodes have no floating IPs and allow all TCP/UDP traffic
-over those private netwroks.
+Another (maximum four, miminum two) provider private networks define admin and
+cluster networks for TripleO deployments. The admin network is only used for
+SSH access. Floating IP is associated only to the undercloud port connected to
+that network. Ingress rules, DNS setup and routing apply via that admin
+interface (connected as eth3) as well. Overcloud nodes have no floating IPs
+and allow all TCP/UDP traffic over the private networks.
 
-The private cluster network is used with CI multinode scenarios. The ports
-connected to that network have Neutron security group/rules disabled. CI
-scenarios often creates openvswitch bridges/vxlan tunnels, which fails when
-ports security features are enabled.
+The private cluster networks (default to 'private1', 'private2', 'private3')
+are used with CI multinode scenarios, which deploy TripleO with networks
+isolation or w/o it. The ports connected to these network have Neutron security
+group/rules disabled. CI scenarios often creates openvswitch bridges/vxlan
+tunnels, which fails when restricting security rules apply for its Neutron ports.
 
 Note that only the admin network requires an external gateway connection set
 up. Both private networks want DHCP enabled and a public DNS server set.

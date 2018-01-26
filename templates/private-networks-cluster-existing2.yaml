@@ -1,0 +1,23 @@
+heat_template_version: 2015-04-30
+
+description: |
+  Template which connects a private network cluster services.
+  This template just passes through the name of an already created private
+  network and a subnet. Implies a pre-created router as well. The cluster
+  network needs a gateway set, DHCP enabled, no external router connection is
+  required. It is connected as eth0.
+
+parameters:
+
+  private_net_cluster2:
+    default: private2
+    type: string
+  private_subnet_cluster2:
+    default: private2
+    type: string
+
+outputs:
+  private_net_cluster2:
+    value: {get_param: private_net_cluster2}
+  private_subnet_cluster2:
+    value: {get_param: private_subnet_cluster2}

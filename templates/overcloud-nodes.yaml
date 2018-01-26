@@ -32,11 +32,31 @@ parameters:
   private_subnet_admin:
     type: string
 
-  private_net_cluster:
+  private_net_cluster1:
     type: string
-    description: Name of a private cluster network which has no floating ips associated
+    default: private1
+    description: Name of a private cluster network 1 which has no floating ips associated
 
-  private_subnet_cluster:
+  private_subnet_cluster1:
+    default: private1
+    type: string
+
+  private_net_cluster2:
+    type: string
+    default: private2
+    description: Name of a private cluster network 2 which has no floating ips associated
+
+  private_subnet_cluster2:
+    default: private2
+    type: string
+
+  private_net_cluster3:
+    type: string
+    default: private3
+    description: Name of a private cluster network 3 which has no floating ips associated
+
+  private_subnet_cluster3:
+    default: private3
     type: string
 
   overcloud_name:
@@ -66,8 +86,12 @@ resources:
           key_name: {get_param: key_name}
           private_net_admin: {get_param: private_net_admin}
           private_subnet_admin: {get_param: private_subnet_admin}
-          private_net_cluster: {get_param: private_net_cluster}
-          private_subnet_cluster: {get_param: private_subnet_cluster}
+          private_net_cluster1: {get_param: private_net_cluster1}
+          private_subnet_cluster1: {get_param: private_subnet_cluster1}
+          private_net_cluster2: {get_param: private_net_cluster2}
+          private_subnet_cluster2: {get_param: private_subnet_cluster2}
+          private_net_cluster3: {get_param: private_net_cluster3}
+          private_subnet_cluster3: {get_param: private_subnet_cluster3}
           overcloud_user_data: {get_param: overcloud_user_data}
           sg: {get_param: sg}
           overcloud_name:

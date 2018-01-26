@@ -1,8 +1,7 @@
 heat_template_version: 2015-04-30
 
 description: |
-  Template which connects a private network cluster services, which
-  has a proper DNS resolver set up for it.
+  Template which connects a private network cluster services.
   This template just passes through the name of an already created private
   network and a subnet. Implies a pre-created router as well. The cluster
   network needs a gateway set, DHCP enabled, no external router connection is
@@ -10,15 +9,15 @@ description: |
 
 parameters:
 
-  private_net_cluster:
-    default: private2
+  private_net_cluster3:
+    default: private3
     type: string
-  private_subnet_cluster:
-    default: private2
+  private_subnet_cluster3:
+    default: private3
     type: string
 
 outputs:
-  private_net_cluster:
-    value: {get_param: private_net_cluster}
-  private_subnet_cluster:
-    value: {get_param: private_subnet_cluster}
+  private_net_cluster3:
+    value: {get_param: private_net_cluster3}
+  private_subnet_cluster3:
+    value: {get_param: private_subnet_cluster3}

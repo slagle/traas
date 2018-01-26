@@ -35,17 +35,38 @@ parameters:
     default: private
     description: An existing subnet of the admin private network.
 
-  private_net_cluster:
+  private_net_cluster1:
+    type: string
+    default: private1
+    description: |
+      Name of a cluster private network which will be associated with servers.
+      Expects a pre-created router, network/subnet with DHCP.
+
+  private_subnet_cluster1:
+    type: string
+    default: private1
+
+  private_net_cluster2:
     type: string
     default: private2
     description: |
       Name of a cluster private network which will be associated with servers.
-      Expects a pre-created router, network w/ DHCP, DNS and a subnet.
+      Expects a pre-created router, network/subnet with DHCP.
 
-  private_subnet_cluster:
+  private_subnet_cluster2:
     type: string
     default: private2
-    description: Name of a cluster private subnet for the cluster net.
+
+  private_net_cluster3:
+    type: string
+    default: private3
+    description: |
+      Name of a cluster private network which will be associated with servers.
+      Expects a pre-created router, network/subnet with DHCP.
+
+  private_subnet_cluster3:
+    type: string
+    default: private3
 
   public_net:
     type: string
@@ -170,11 +191,23 @@ resources:
       private_net_admin: {get_param: private_net_admin}
       private_subnet_admin: {get_param: private_subnet_admin}
 
-  private_network_cluster:
-    type: OS::TraaS::PrivateNetworkCluster
+  private_network_cluster1:
+    type: OS::TraaS::PrivateNetworkCluster1
     properties:
-      private_net_cluster: {get_param: private_net_cluster}
-      private_subnet_cluster: {get_param: private_subnet_cluster}
+      private_net_cluster1: {get_param: private_net_cluster1}
+      private_subnet_cluster1: {get_param: private_subnet_cluster1}
+
+  private_network_cluster2:
+    type: OS::TraaS::PrivateNetworkCluster2
+    properties:
+      private_net_cluster2: {get_param: private_net_cluster2}
+      private_subnet_cluster2: {get_param: private_subnet_cluster2}
+
+  private_network_cluster3:
+    type: OS::TraaS::PrivateNetworkCluster3
+    properties:
+      private_net_cluster3: {get_param: private_net_cluster3}
+      private_subnet_cluster3: {get_param: private_subnet_cluster3}
 
   overcloud_user_data_script_branch:
     type: OS::Heat::Value
@@ -207,14 +240,19 @@ resources:
     properties:
       type: string
       value: |
-        echo 'GATEWAYDEV=eth1' >> /etc/sysconfig/network
-        cat >/etc/sysconfig/network-scripts/ifcfg-eth1<<EOF
-        DEVICE=eth1
+        echo 'GATEWAYDEV=eth3' >> /etc/sysconfig/network
+        for i in 0 1 2 3 ; do
+        MAC="$(cat /sys/class/net/eth${i}/address)"
+        cat >/etc/sysconfig/network-scripts/ifcfg-eth${i}<<EOF
+        DEVICE=eth${i}
+        TYPE=Ethernet
+        HWADDR=$MAC
         BOOTPROTO=dhcp
         ONBOOT=yes
         EOF
-        ifup eth1
-        ip ro replace default dev eth1
+        ifup eth${i} || :
+        done
+        ip ro replace default dev eth3
         systemctl restart network
         while ! ping -c3 -W5 mirrorlist.centos.org; do sleep 30; done
         rpm -q git || yum -y install git
@@ -234,7 +272,12 @@ resources:
         reboot
 
   undercloud:
-    depends_on: [public_network, private_network_admin, private_network_cluster]
+    depends_on:
+     - public_network
+     - private_network_admin
+     - private_network_cluster1
+     - private_network_cluster2
+     - private_network_cluster3
     type: OS::TraaS::Undercloud
     properties:
       undercloud_flavor: {get_param: undercloud_flavor}
@@ -253,13 +296,21 @@ resources:
             - {get_attr: [user_data_script, value]}
       private_net_admin: {get_attr: [private_network_admin, private_net_admin]}
       private_subnet_admin: {get_attr: [private_network_admin, private_subnet_admin]}
-      private_net_cluster: {get_attr: [private_network_cluster, private_net_cluster]}
-      private_subnet_cluster: {get_attr: [private_network_cluster, private_subnet_cluster]}
+      private_net_cluster1: {get_attr: [private_network_cluster1, private_net_cluster1]}
+      private_subnet_cluster1: {get_attr: [private_network_cluster1, private_subnet_cluster1]}
+      private_net_cluster2: {get_attr: [private_network_cluster2, private_net_cluster2]}
+      private_subnet_cluster2: {get_attr: [private_network_cluster2, private_subnet_cluster2]}
+      private_net_cluster3: {get_attr: [private_network_cluster3, private_net_cluster3]}
+      private_subnet_cluster3: {get_attr: [private_network_cluster3, private_subnet_cluster3]}
       public_net: {get_attr: [public_network, public_net]}
 
   overcloud_nodes:
     type: OS::TraaS::OvercloudNodes
-    depends_on: [private_network_admin, private_network_cluster]
+    depends_on:
+     - private_network_admin
+     - private_network_cluster1
+     - private_network_cluster2
+     - private_network_cluster3
     properties:
       overcloud_flavor: {get_param: overcloud_flavor}
       overcloud_image: {get_param: overcloud_image}
@@ -267,8 +318,12 @@ resources:
       overcloud_node_count: {get_param: overcloud_node_count}
       private_net_admin: {get_attr: [private_network_admin, private_net_admin]}
       private_subnet_admin: {get_attr: [private_network_admin, private_subnet_admin]}
-      private_net_cluster: {get_attr: [private_network_cluster, private_net_cluster]}
-      private_subnet_cluster: {get_attr: [private_network_cluster, private_subnet_cluster]}
+      private_net_cluster1: {get_attr: [private_network_cluster1, private_net_cluster1]}
+      private_subnet_cluster1: {get_attr: [private_network_cluster1, private_subnet_cluster1]}
+      private_net_cluster2: {get_attr: [private_network_cluster2, private_net_cluster2]}
+      private_subnet_cluster2: {get_attr: [private_network_cluster2, private_subnet_cluster2]}
+      private_net_cluster3: {get_attr: [private_network_cluster3, private_net_cluster3]}
+      private_subnet_cluster3: {get_attr: [private_network_cluster3, private_subnet_cluster3]}
       sg: {get_resource: sg_oc}
       overcloud_user_data:
         list_join:
