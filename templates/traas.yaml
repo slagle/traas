@@ -181,7 +181,7 @@ resources:
             - {get_param: undercloud_name}
       undercloud_user_data:
         list_join:
-          - '\n'
+          - ''
           - - {get_attr: [undercloud_user_data_script_branch, value]}
             - {get_attr: [user_data_script, value]}
       private_net: {get_attr: [private_network, private_net]}
@@ -198,7 +198,7 @@ resources:
       private_net: {get_attr: [private_network, private_net]}
       overcloud_user_data:
         list_join:
-          - '\n'
+          - ''
           - - {get_attr: [overcloud_user_data_script_branch, value]}
             - {get_attr: [user_data_script, value]}
       overcloud_name:
