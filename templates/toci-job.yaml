@@ -37,7 +37,8 @@ parameters:
     type: string
     default: ''
     description: A caret character separated list of the changes upon which
-                 tripleo-ci, tripleo-quickstart, tripleo-quickstart-extra
+                 tripleo-ci, tripleo-quickstart, tripleo-quickstart-extra.
+                 Can be 'openstack/tripleo-quickstart:343433^openstack/tripleo-quickstart-extras:737343'
 
   zuul_changes:
     type: string
