@@ -1,4 +1,4 @@
-heat_template_version: 2015-04-30
+heat_template_version: newton
 
 parameters:
   undercloud_flavor:
@@ -11,22 +11,63 @@ parameters:
     type: string
   undercloud_user_data:
     type: string
-  private_net:
+  private_net_admin:
+    type: string
+  private_subnet_admin:
+    type: string
+  private_net_cluster1:
+    type: string
+  private_subnet_cluster1:
+    type: string
+  private_net_cluster2:
+    type: string
+  private_subnet_cluster2:
+    type: string
+  private_net_cluster3:
+    type: string
+  private_subnet_cluster3:
     type: string
   public_net:
     type: string
+    default: ''
+  sg:
+    type: string
+    description: Neutron sec group
 
 resources:
-  undercloud_sg:
-    type: OS::Neutron::SecurityGroup
+
+  uc_admin_port:
+    type: OS::Neutron::Port
     properties:
-      name: undercloud_sg
-      description: Ping and SSH
-      rules:
-      - protocol: icmp
-      - protocol: tcp
-        port_range_min: 22
-        port_range_max: 22
+      network: {get_param: private_net_admin}
+      fixed_ips:
+        - subnet: {get_param: private_subnet_admin}
+      security_groups:
+        - {get_param: sg}
+
+  uc_data_port1:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_cluster1}
+      port_security_enabled: false
+      fixed_ips:
+        - subnet: {get_param: private_subnet_cluster1}
+
+  uc_data_port2:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_cluster2}
+      port_security_enabled: false
+      fixed_ips:
+        - subnet: {get_param: private_subnet_cluster2}
+
+  uc_data_port3:
+    type: OS::Neutron::Port
+    properties:
+      network: {get_param: private_net_cluster3}
+      port_security_enabled: false
+      fixed_ips:
+        - subnet: {get_param: private_subnet_cluster3}
 
   undercloud_server:
     type: OS::Nova::Server
@@ -35,10 +76,10 @@ resources:
       image: {get_param: undercloud_image}
       key_name: {get_param: key_name}
       networks:
-      - network: {get_param: private_net}
-      security_groups:
-        - "default"
-        - {get_resource: undercloud_sg}
+        - {port: {get_resource: uc_data_port1}}
+        - {port: {get_resource: uc_data_port2}}
+        - {port: {get_resource: uc_data_port3}}
+        - {port: {get_resource: uc_admin_port}}
       name: {get_param: undercloud_name}
       user_data_format: SOFTWARE_CONFIG
       user_data: {get_param: undercloud_user_data}
@@ -52,7 +93,7 @@ resources:
         get_attr:
           - undercloud_server
           - addresses
-          - {get_param: private_net}
+          - {get_param: private_net_admin}
           - 0
           - port
 
@@ -70,10 +111,10 @@ outputs:
     value:
       get_attr: [undercloud_floating_ip, undercloud_floating_ip]
   undercloud_private_ip:
-    description: "private ip of the undercloud instance"
+    description: "private cluster ip of the undercloud instance"
     value:
       get_attr:
         - undercloud_server
         - networks
-        - {get_param: private_net}
+        - {get_param: private_net_cluster1}
         - 0

@@ -1,0 +1,24 @@
+heat_template_version: 2015-04-30
+
+description: |
+  Template which connects a private network for admin/control access, which
+  is routed to an external network and has a proper DNS resolver set up for it.
+  This template just passes through the name of an already created private
+  network and a subnet. Implies a pre-created router as well. The admin
+  network needs a gateway set, DHCP enabled, an external router connection is
+  required. It is connected as eth1.
+
+parameters:
+
+  private_net_admin:
+    default: private
+    type: string
+  private_subnet_admin:
+    default: private
+    type: string
+
+outputs:
+  private_net_admin:
+    value: {get_param: private_net_admin}
+  private_subnet_admin:
+    value: {get_param: private_subnet_admin}
